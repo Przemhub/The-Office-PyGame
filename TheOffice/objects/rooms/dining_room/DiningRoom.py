@@ -7,12 +7,12 @@ from objects.rooms.dining_room.DiningTable import DiningTable
 
 
 class DiningRoom(Room):
-    def __init__(self, x, y,id, room_array):
-        self.room_array = room_array
+    def __init__(self, x, y, id, room_board):
+        self.room_board = room_board
         self.id = id
-        self.init_sprite(x,y)
+        self.init_sprite(x, y)
         self.init_tables()
-        self._data = DiningRoomData(list(map(lambda table:table._data,self.tables)))
+        self._data = DiningRoomData(list(map(lambda table: table._data, self.action_objects)))
 
     def init_sprite(self, x, y):
         sprite.Sprite.__init__(self)
@@ -20,13 +20,13 @@ class DiningRoom(Room):
         self.mask = mask.from_surface(self.image)
         x = 0
         y = 0
-        for room in self.room_array:
+        for room in self.room_board:
             x
-        self.rect = Rect(x * self.image.get_width(), 230 - y * self.image.get_height(), self.image.get_width(), self.image.get_height())
-
+        self.rect = Rect(x * self.image.get_width(), 230 - y * self.image.get_height(), self.image.get_width(),
+                         self.image.get_height())
 
     def init_tables(self):
-        self.tables = [
+        self.action_objects = [
             DiningTable(self.rect.x + 35, self.rect.y + 300),
             DiningTable(self.rect.x + 35, self.rect.y + 300),
             DiningTable(self.rect.x + 35, self.rect.y + 300),

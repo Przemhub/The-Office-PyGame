@@ -31,7 +31,7 @@ class EmployeeEventHandler:
         for i in range (0, len(self.employee_list)):
             if event.type == pygame.MOUSEBUTTONDOWN and self.employee_list[i].rect.collidepoint(pygame.mouse.get_pos()):
                 self.dragged_emp_i = i
-                self.handle_emp_desk_detach_event(self.employee_list[i])
+                self.handle_emp_desk_detach_event(self.employee_list[self.dragged_emp_i])
             if event.type == pygame.MOUSEBUTTONUP and self.employee_list[i].rect.collidepoint(pygame.mouse.get_pos()):
                 self.handle_emp_desk_collide_event(self.employee_list[self.dragged_emp_i])
                 self.dragged_emp_i = -1

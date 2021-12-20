@@ -1,0 +1,2 @@
+1 problem: pozycja pracownika jest za niska o 50Y
+2 problem: pracownik przypisany do stolu obiadowego zarabia jakims cudem pieniadze, ciekawe czy wgle glod mu sie wypelnia

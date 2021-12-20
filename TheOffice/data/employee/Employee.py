@@ -9,7 +9,7 @@ from data.employee.Statistics import Statistics
 
 
 class EmployeeData:
-    def __init__(self,name,company) -> object:
+    def __init__(self, name, company) -> object:
         self.name = name
         self.company_observer = company
         self.init_data()
@@ -17,9 +17,9 @@ class EmployeeData:
         self.company_observer.update_emp_num()
         self.desk_observer = None
 
-    def attach_desk(self, desk):
-        print(desk.taken)
-        self.desk_observer = desk
+    def attach_desk(self, action_objects):
+        print(action_objects.taken)
+        self.desk_observer = action_objects
 
     def detach_desk(self):
         self.desk_observer = None
@@ -28,8 +28,6 @@ class EmployeeData:
         self._stats = Statistics()
         self._needs = Needs()
         self._abilities = Abilities()
-
-
 
     def make_sale(self):
         sale = self._calculator.calculate_sale()
@@ -45,5 +43,5 @@ class EmployeeData:
             return False
         return True
 
-    def update_company(self,papers):
+    def update_company(self, papers):
         self.company_observer.update_papers(papers)
