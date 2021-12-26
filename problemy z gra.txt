@@ -1,2 +1,15 @@
-1 problem: pozycja pracownika jest za niska o 50Y
-2 problem: pracownik przypisany do stolu obiadowego zarabia jakims cudem pieniadze, ciekawe czy wgle glod mu sie wypelnia
+1 problem: pozycja pracownika jest za niska o 20Y *
+2 problem: stołówka nie działo, nie daji ziorcia robotom, nnie dzialaja kolizje
+3 problem: pokoje się nie generujo obok sjiebie
+
+
+model:
+  rooms dining_room office_room
+  employees
+
+services
+  ConsumerThreadService
+
+controllers
+  ConsumerThreadController if Collision then ConsumerThreadService
+
