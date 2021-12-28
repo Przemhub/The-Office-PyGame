@@ -2,21 +2,23 @@ import pygame
 
 
 class EmployeeService:
-    def __init__(self, room_board, hustle_thread, consumer_thread):
+    def __init__(self, room_board, hustle_thread, consumer_thread, needs_thread):
         self.employee_list = []
         self.init_extras()
         self.room_board = room_board
-        self.init_threads(hustle_thread, consumer_thread)
+        self.init_threads(hustle_thread, consumer_thread,needs_thread)
 
-    def init_threads(self, hustle_thread, consumer_thread):
+    def init_threads(self, hustle_thread, consumer_thread, needs_thread):
         self.hustle_thread = hustle_thread
         self.consumer_thread = consumer_thread
+        self.needs_thread = needs_thread
 
     def init_extras(self):
         self.dragged_emp_i = -1
 
     def add_employee(self, emp):
         self.employee_list.append(emp)
+        self.needs_thread.insert_emp(emp)
 
     def drag_emp_if_selected(self):
         if self.dragged_emp_i != -1:
@@ -62,8 +64,6 @@ class EmployeeService:
                                 print(self.consumer_thread.emp_dict)
                             elif type(room_list[room_i]).__name__ == "OfficeRoom":
                                 self.hustle_thread.insert_emp(emp)
-                            if self.consumer_thread.get_emp(id(emp)) != None:
-                                self.consumer_thread.pop_emp(emp)
                             self.adjust_emp_to_desk(emp, room_list[room_i].action_objects[desk_i])
                             self.update_rooms_desk_status(room_list, room_i, desk_i, True)
                             emp.attach_desk(room_list[room_i].action_objects[desk_i])

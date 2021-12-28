@@ -11,5 +11,5 @@ class ConsumeService(EmployeeTaskThread):
         while True:
             if self.empty_dict() == False:
                 for employee in  self.emp_dict.values():
-                    employee._needs.decrease_needs()
-                time.wait(5000)
+                    employee._needs.eat()
+                time.wait(3500)

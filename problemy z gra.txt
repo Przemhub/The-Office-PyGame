@@ -1,6 +1,8 @@
 1 problem: pozycja pracownika jest za niska o 20Y *
-2 problem: stołówka nie działo, nie daji ziorcia robotom, nnie dzialaja kolizje
-3 problem: pokoje się nie generujo obok sjiebie
+2 problem: stołówka nie działo, nie daji ziorcia robotom, nnie dzialaja kolizje *
+3 problem: pracownik przypisany do stolu obiadowego zarabia jakims cudem pieniadze, ciekawe czy wgle glod mu sie wypelnia *
+4 problem: pokoje nachodza na siebie *
+5 problem: zrobic porzadek z threadami, nie umieszczac ich w Main
 
 
 model:

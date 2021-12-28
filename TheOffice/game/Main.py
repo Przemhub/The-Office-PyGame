@@ -7,6 +7,7 @@ from model.Company import CompanyData
 from model.Employee.Employee import Employee
 from model.RoomSingleton import RoomSingleton
 from service.EmployeeServices.ConsumeService import ConsumeService
+from service.EmployeeServices.NeedsService import NeedsService
 from service.EmployeeServices.WorkingService import WorkingService
 
 
@@ -42,12 +43,17 @@ class Game:
     def init_objects(self):
         hustle_thread = WorkingService()
         consumer_thread = ConsumeService()
+        needs_thread = NeedsService()
         hustle_thread.start()
+        needs_thread.start()
+        consumer_thread.start()
         self.building = RoomSingleton()
 
-        # self.building.build_office((0, 0))
+
         self.building.build_dining_room((0, 0))
-        self.employee_controller = EmployeeController(self.building, hustle_thread, consumer_thread)
+        self.building.build_office((1, 0))
+        
+        self.employee_controller = EmployeeController(self.building, hustle_thread, consumer_thread, needs_thread)
 
         self._company = CompanyData()
         emp = Employee(100, 10, "Bob", self._company)
@@ -55,15 +61,14 @@ class Game:
         self.employee_controller.employee_service.add_employee(emp)
         self.employee_controller.employee_service.add_employee(emp2)
 
+
     def draw(self):
         for floor in range(0, len(self.building.room_board)):
             for room in self.building.room_board[floor].values():
                 self.screen.blit(room.image, room.rect)
         for emp in self.employee_controller.employee_service.employee_list:
             self.screen.blit(emp.image, emp.rect)
-        for room in self.employee_controller.employee_service.room_board.get(0).values():
-            for obj in room.action_objects:
-                pygame.draw.rect(self.screen,0,obj.rect)
+
 
         self.screen.blit(self.paper_sold, pygame.Rect(300, 100, 1, 1))
         self.screen.blit(self.money, pygame.Rect(300, 200, 1, 1))

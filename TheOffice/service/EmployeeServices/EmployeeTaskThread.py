@@ -11,7 +11,6 @@ class EmployeeTaskThread(Thread):
         self.emp_dict = employee_dict
 
     def insert_emp(self, employee):
-        print(employee)
         self.emp_dict[id(employee)] = employee
 
     def empty_dict(self):
