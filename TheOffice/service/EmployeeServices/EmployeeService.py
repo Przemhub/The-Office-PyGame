@@ -1,24 +1,33 @@
 import pygame
 
+from model.Employee.Employee import Employee
+from service.EmployeeServices.ConsumeService import ConsumeService
+from service.EmployeeServices.NeedsService import NeedsService
+from service.EmployeeServices.WorkingService import WorkingService
+
 
 class EmployeeService:
-    def __init__(self, room_board, hustle_thread, consumer_thread, needs_thread):
+    def __init__(self, room_board):
         self.employee_list = []
         self.init_extras()
         self.room_board = room_board
-        self.init_threads(hustle_thread, consumer_thread,needs_thread)
+        self.init_threads()
 
-    def init_threads(self, hustle_thread, consumer_thread, needs_thread):
-        self.hustle_thread = hustle_thread
-        self.consumer_thread = consumer_thread
-        self.needs_thread = needs_thread
+    def init_threads(self):
+        self.hustle_thread = WorkingService()
+        self.consumer_thread = ConsumeService()
+        self.needs_thread = NeedsService()
+        self.hustle_thread.start()
+        self.needs_thread.start()
+        self.consumer_thread.start()
+
+    def create_employee(self, x, y, name, company):
+        emp = Employee(x, y, name, company)
+        self.employee_list.append(emp)
+        self.needs_thread.insert_emp(emp)
 
     def init_extras(self):
         self.dragged_emp_i = -1
-
-    def add_employee(self, emp):
-        self.employee_list.append(emp)
-        self.needs_thread.insert_emp(emp)
 
     def drag_emp_if_selected(self):
         if self.dragged_emp_i != -1:
@@ -57,8 +66,8 @@ class EmployeeService:
                     # print("dolided?",emp.rect.colliderect(room_list[room_i].action_objects[desk_i].rect))
                     if emp.rect.colliderect(room_list[room_i].action_objects[desk_i].rect):
                         # print("Collision detected with:", emp.name)
-                        print("czy taken?",self.action_object_taken(room_list, room_i, desk_i ))
-                        if self.action_object_taken(room_list, room_i, desk_i ) == False:
+                        print("czy taken?", self.action_object_taken(room_list, room_i, desk_i))
+                        if self.action_object_taken(room_list, room_i, desk_i) == False:
                             if type(room_list[room_i]).__name__ == "DiningRoom":
                                 self.consumer_thread.insert_emp(emp)
                                 print(self.consumer_thread.emp_dict)
@@ -67,7 +76,6 @@ class EmployeeService:
                             self.adjust_emp_to_desk(emp, room_list[room_i].action_objects[desk_i])
                             self.update_rooms_desk_status(room_list, room_i, desk_i, True)
                             emp.attach_desk(room_list[room_i].action_objects[desk_i])
-
 
     def adjust_emp_to_desk(self, emp, desk):
         emp.rect.y = desk.rect.y - 20

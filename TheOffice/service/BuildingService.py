@@ -2,7 +2,7 @@ from model.DiningRoom.DiningRoom import DiningRoom
 from model.OfficeRoom.OfficeRoom import OfficeRoom
 
 
-class RoomSingleton:
+class BuildingService:
     def __init__(self):
         self.room_board = {0: {}}
 
