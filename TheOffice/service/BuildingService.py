@@ -6,6 +6,9 @@ class BuildingService:
     def __init__(self):
         self.room_board = {0: {}}
 
+    def build_floor(self):
+        self.room_board[len(self.room_board)] = {}
+
     def build_office(self, board_pos):
         if board_pos[1] >= len(self.room_board):
             raise Exception("board_pos[1] exceeded the actual number of floors", len(self.room_board))
@@ -18,5 +21,5 @@ class BuildingService:
             raise Exception("board_pos[1] exceeded the actual number of floors", len(self.room_board),
                             self.room_board)
         else:
-            dining = DiningRoom(board_pos[0], board_pos[1], self.room_board)
+            dining = DiningRoom(board_pos[1], self.room_board)
             self.room_board[board_pos[1]][id(dining)] = dining

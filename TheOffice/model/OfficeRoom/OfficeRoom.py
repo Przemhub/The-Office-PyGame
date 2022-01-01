@@ -16,14 +16,11 @@ class OfficeRoom(sprite.Sprite):
         self.image = image.load("../resources/rooms/office.png")
         self.mask = mask.from_surface(self.image)
         x = 0
-        i = 0
         for room in self.neighbour_rooms.values():
-            if i < x:
-                break
             x += room.image.get_width()
-            i += 1
         self.rect = Rect(x, 230 - y * self.image.get_height(), self.image.get_width(),
                          self.image.get_height())
+
 
     def init_desks(self):
         self.action_objects = [

@@ -4,7 +4,7 @@ from model.Employee.Abilities import Abilities
 class Needs:
     def __init__(self):
         self.motivation = 100
-        self.hunger = 100
+        self.hunger = 20
         self.stress = 100
         self._abilities = Abilities()
 
@@ -22,6 +22,8 @@ class Needs:
 
     def increase_hunger(self):
         self.hunger -= self._abilities.stomach
+        if self.hunger < 0:
+            self.hunger = 0
 
     def is_hungry(self):
         return self.hunger <= 0

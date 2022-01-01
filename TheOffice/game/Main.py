@@ -3,6 +3,7 @@ import sys
 import pygame
 
 from controller.EmployeeController import EmployeeController
+from controller.MouseController import MouseController
 from model.Company import CompanyData
 from service.BuildingService import BuildingService
 
@@ -21,9 +22,12 @@ class Game:
                 if event.type == pygame.QUIT:
                     sys.exit(0)
                 self.employee_controller.grab_employee_event(event)
+
             self.screen.fill((136, 205, 235))
             self.employee_controller.employee_service.drag_emp_if_selected()
             self.update_text()
+            self.mouse_controller.scroll_view()
+            self.employee_controller.employee_service.check_every_employee()
             self.draw()
             pygame.display.flip()
 
@@ -38,12 +42,15 @@ class Game:
 
     def init_objects(self):
         self.build_service = BuildingService()
-        self.build_service.build_dining_room((0, 0))
+        self.build_service.build_office((0, 0))
         self.build_service.build_office((1, 0))
+        self.build_service.build_dining_room((2, 0))
         self.employee_controller = EmployeeController(self.build_service)
+        self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
+                                                self.build_service.room_board)
         self._company = CompanyData()
         self.employee_controller.employee_service.create_employee(100, 10, "Bob", self._company)
-        self.employee_controller.employee_service.create_employee(120, 10, "Bob2", self._company)
+        self.employee_controller.employee_service.create_employee(120, 280, "Bob2", self._company)
 
     def draw(self):
         for floor in range(0, len(self.build_service.room_board)):
@@ -55,6 +62,10 @@ class Game:
         self.screen.blit(self.paper_sold, pygame.Rect(300, 100, 1, 1))
         self.screen.blit(self.money, pygame.Rect(300, 200, 1, 1))
         self.screen.blit(self.needs, pygame.Rect(300, 250, 1, 1))
+        # for floor in range(0, len(self.build_service.room_board)):
+        #     for room in self.build_service.room_board[floor].values():
+        #         for table in room.action_objects:
+        #             pygame.draw.rect(self.screen, (0,0,0),table.rect)
 
     def init_texts(self):
         self.font = pygame.font.SysFont("Calibri", 24, True)

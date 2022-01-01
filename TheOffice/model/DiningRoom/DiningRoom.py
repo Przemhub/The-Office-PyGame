@@ -5,7 +5,7 @@ from model.DiningRoom.DiningTable import DiningTable
 
 
 class DiningRoom(sprite.Sprite):
-    def __init__(self, x, y, room_board):
+    def __init__(self, y, room_board):
         sprite.Sprite.__init__(self)
         self.neighbour_rooms = room_board[y]
         self.action_objects = []
@@ -13,16 +13,11 @@ class DiningRoom(sprite.Sprite):
         self.init_tables()
 
     def init_sprite(self, y):
-
         self.image = image.load("../resources/rooms/dining_room.png")
         self.mask = mask.from_surface(self.image)
         x = 0
-        i = 0
         for room in self.neighbour_rooms.values():
-            if i < x:
-                break
             x += room.image.get_width()
-            i += 1
         self.rect = Rect(x, 230 - y * self.image.get_height(), self.image.get_width(),
                          self.image.get_height())
 

@@ -1,9 +1,6 @@
 import pygame
 
-from service.EmployeeServices.ConsumeService import ConsumeService
 from service.EmployeeServices.EmployeeService import EmployeeService
-from service.EmployeeServices.NeedsService import NeedsService
-from service.EmployeeServices.WorkingService import WorkingService
 
 
 class EmployeeController:

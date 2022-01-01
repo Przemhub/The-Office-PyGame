@@ -31,8 +31,8 @@ class EmployeeService:
 
     def drag_emp_if_selected(self):
         if self.dragged_emp_i != -1:
-            self.employee_list[self.dragged_emp_i].rect.x = pygame.mouse.get_pos()[0]
-            self.employee_list[self.dragged_emp_i].rect.y = pygame.mouse.get_pos()[1]
+            self.employee_list[self.dragged_emp_i].rect.centerx = pygame.mouse.get_pos()[0]
+            self.employee_list[self.dragged_emp_i].rect.centery = pygame.mouse.get_pos()[1]
 
     def pick_up_employee(self, index):
         if self.employee_list[index].rect.collidepoint(pygame.mouse.get_pos()):
@@ -49,7 +49,7 @@ class EmployeeService:
     def handle_emp_desk_detach_event(self, emp):
         if emp.desk_observer != None:
             emp.desk_observer.taken = False
-            emp.detach_desk()
+            emp.detach_action_object()
             try:
                 self.hustle_thread.pop_emp(emp)
             except:
@@ -59,26 +59,69 @@ class EmployeeService:
         for floor_i in range(0, len(self.room_board)):
             room_list = list(self.room_board[floor_i].values())
             for room_i in range(0, len(self.room_board[floor_i])):
-                for desk_i in range(0, 4):
+                for desk_i in range(0, len(room_list[room_i].action_objects)):
                     # print(type(room_list[room_i]).__name__)
                     # print("table rect ", room_list[room_i].action_objects[desk_i].rect)
                     # print("emp rect" ,emp.rect)
                     # print("dolided?",emp.rect.colliderect(room_list[room_i].action_objects[desk_i].rect))
                     if emp.rect.colliderect(room_list[room_i].action_objects[desk_i].rect):
                         # print("Collision detected with:", emp.name)
-                        print("czy taken?", self.action_object_taken(room_list, room_i, desk_i))
+                        # print("czy taken?", self.action_object_taken(room_list, room_i, desk_i))
                         if self.action_object_taken(room_list, room_i, desk_i) == False:
                             if type(room_list[room_i]).__name__ == "DiningRoom":
                                 self.consumer_thread.insert_emp(emp)
-                                print(self.consumer_thread.emp_dict)
+                                # print(self.consumer_thread.emp_dict)
                             elif type(room_list[room_i]).__name__ == "OfficeRoom":
                                 self.hustle_thread.insert_emp(emp)
-                            self.adjust_emp_to_desk(emp, room_list[room_i].action_objects[desk_i])
+                            self.adjust_emp_to_desk(emp, room_list[room_i].action_objects[desk_i], room_list[room_i])
                             self.update_rooms_desk_status(room_list, room_i, desk_i, True)
                             emp.attach_desk(room_list[room_i].action_objects[desk_i])
 
-    def adjust_emp_to_desk(self, emp, desk):
-        emp.rect.y = desk.rect.y - 20
+    def adjust_emp_to_desk(self, emp, desk, room):
+        if type(room).__name__ == "DiningRoom":
+            emp.sitting_sprite()
+            emp.rect.y = desk.rect.y - 30
+            emp.rect = emp.rect.move(-20, 0)
+
+    def check_every_employee(self):
+        for emp in self.employee_list:
+            self.check_needs_and_move(emp)
+
+    def check_needs_and_move(self, emp):
+        # only use it once when the needs are below threshold
+        if emp.destination_room is None:
+            if emp._needs.hunger <= 10:
+                for floor_i in range(0, len(self.room_board)):
+                    room_list = list(self.room_board[floor_i].values())
+                    for room_i in range(0, len(self.room_board[floor_i])):
+                        if emp.rect.colliderect(room_list[room_i].rect):
+                            room_dist = 1
+                            while True:
+                                if room_i + room_dist < len(room_list):
+                                    if type(room_list[room_i + room_dist]).__name__ == "DiningRoom":
+                                        emp.destination_room = room_list[room_i + room_dist]
+                                        break
+                                if room_i - room_dist >= 0:
+                                    if type(room_list[room_i - room_dist]).__name__ == "DiningRoom":
+                                        emp.destination_room = room_list[room_i - room_dist]
+                                        break
+                                if room_i - room_dist < 0 and room_i + room_dist >= len(room_list):
+                                    break
+                                room_dist += 1
+        else:
+            self.move_to_destination(emp)
+
+    def move_to_destination(self, emp):
+        x = 0
+        y = 0
+        if emp.destination_room.rect.x > emp.rect.x:
+            x = 5
+        elif emp.destination_room.rect.x < emp.rect.x:
+            x = -5
+        else:
+            emp.destination_room = None
+            return
+        emp.rect = emp.rect.move(x, y)
 
     def action_object_taken(self, room_list, room_i, desk_i):
         action_object = room_list[room_i].action_objects[desk_i]

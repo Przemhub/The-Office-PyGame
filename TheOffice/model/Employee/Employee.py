@@ -1,9 +1,5 @@
-import random
-
-from numpy.matlib import rand
 from pygame import sprite, image, mask
 from pygame.rect import Rect
-from pygame.sprite import AbstractGroup
 
 from model.Employee.Abilities import Abilities
 from model.Employee.Needs import Needs
@@ -33,13 +29,15 @@ class Employee(sprite.Sprite):
         print(action_objects.taken)
         self.desk_observer = action_objects
 
-    def detach_desk(self):
+    def detach_action_object(self):
         self.desk_observer = None
+        self.image = image.load("../resources/employees/employee.png")
 
     def init_data(self):
         self._stats = Statistics()
         self._needs = Needs()
         self._abilities = Abilities()
+        self.destination_room = None
 
     def make_sale(self):
         sale = self._calculator.calculate_sale()
@@ -57,3 +55,8 @@ class Employee(sprite.Sprite):
 
     def update_company(self, papers):
         self.company_observer.update_papers(papers)
+
+
+
+    def sitting_sprite(self):
+        self.image = image.load("../resources/employees/employee_sit.png")

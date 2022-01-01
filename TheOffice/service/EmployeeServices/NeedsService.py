@@ -13,7 +13,4 @@ class NeedsService(EmployeeTaskThread):
                 for employee in self.emp_dict.values():
                     if employee.can_work():
                         employee._needs.increase_hunger()
-
-                    else:
-                        self.pop_emp(employee)
                 time.wait(6000)
