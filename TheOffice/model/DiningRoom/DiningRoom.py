@@ -1,12 +1,13 @@
 from pygame import sprite, image, mask
 from pygame.rect import Rect
 
-from model.DiningRoom.DiningTable import DiningTable
+from model.DiningRoom.DiningChair import DiningChair
+from model.Room import Room
 
 
-class DiningRoom(sprite.Sprite):
+class DiningRoom(Room):
     def __init__(self, y, room_board):
-        sprite.Sprite.__init__(self)
+        Room.__init__(self)
         self.neighbour_rooms = room_board[y]
         self.action_objects = []
         self.init_sprite(y)
@@ -23,12 +24,12 @@ class DiningRoom(sprite.Sprite):
 
     def init_tables(self):
         self.action_objects = [
-            DiningTable(self.rect.x + 35, self.rect.y + 300),
-            DiningTable(self.rect.x + 120, self.rect.y + 300),
-            DiningTable(self.rect.x + 140, self.rect.y + 300),
-            DiningTable(self.rect.x + 227, self.rect.y + 300),
-            DiningTable(self.rect.x + 250, self.rect.y + 300),
-            DiningTable(self.rect.x + 340, self.rect.y + 300),
-            DiningTable(self.rect.x + 365, self.rect.y + 300),
-            DiningTable(self.rect.x + 454, self.rect.y + 300),
+            DiningChair(self.rect.x + 35, self.rect.y + 300, self),
+            DiningChair(self.rect.x + 120, self.rect.y + 300, self),
+            DiningChair(self.rect.x + 140, self.rect.y + 300, self),
+            DiningChair(self.rect.x + 227, self.rect.y + 300, self),
+            DiningChair(self.rect.x + 250, self.rect.y + 300, self),
+            DiningChair(self.rect.x + 340, self.rect.y + 300, self),
+            DiningChair(self.rect.x + 365, self.rect.y + 300, self),
+            DiningChair(self.rect.x + 454, self.rect.y + 300, self),
         ]

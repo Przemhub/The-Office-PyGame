@@ -14,21 +14,29 @@ class MouseController:
             for floor in self.room_board.values():
                 for room in floor.values():
                     room.rect = room.rect.move(-10, 0)
+                    for a_obj in room.action_objects:
+                        a_obj.rect = a_obj.rect.move(-10, 0)
         elif pygame.mouse.get_pos()[0] <= 10:
             for emp in self.emp_list:
                 emp.rect = emp.rect.move(10, 0)
             for floor in self.room_board.values():
                 for room in floor.values():
                     room.rect = room.rect.move(10, 0)
+                    for a_obj in room.action_objects:
+                        a_obj.rect = a_obj.rect.move(10, 0)
         elif pygame.mouse.get_pos()[1] <= 10:
             for emp in self.emp_list:
                 emp.rect = emp.rect.move(0, 10)
             for floor in self.room_board.values():
                 for room in floor.values():
                     room.rect = room.rect.move(0, 10)
+                    for a_obj in room.action_objects:
+                        a_obj.rect = a_obj.rect.move(0, 10)
         elif pygame.mouse.get_pos()[1] >= self.screen.get_height() - 10:
             for emp in self.emp_list:
                 emp.rect = emp.rect.move(0, -10)
             for floor in self.room_board.values():
                 for room in floor.values():
                     room.rect = room.rect.move(0, -10)
+                    for a_obj in room.action_objects:
+                        a_obj.rect = a_obj.rect.move(0, -10)

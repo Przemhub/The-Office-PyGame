@@ -20,6 +20,4 @@ class WorkingService(EmployeeTaskThread):
                             i=0
                         else:
                             i+=1
-                    else:
-                        self.pop_emp(employee)
                 time.wait(1000)

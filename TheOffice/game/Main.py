@@ -22,13 +22,13 @@ class Game:
                 if event.type == pygame.QUIT:
                     sys.exit(0)
                 self.employee_controller.grab_employee_event(event)
-
             self.screen.fill((136, 205, 235))
             self.employee_controller.employee_service.drag_emp_if_selected()
             self.update_text()
             self.mouse_controller.scroll_view()
             self.employee_controller.employee_service.check_every_employee()
             self.draw()
+            self.clock.tick(30)
             pygame.display.flip()
 
     def update_text(self):
@@ -85,6 +85,7 @@ class Game:
         self.full_screen = False
         self.current_res = self.res_list[4]
         self.screen = pygame.display.set_mode(self.current_res)
+        self.clock = pygame.time.Clock()
 
     def init_map(self):
         room_singleton = BuildingService()

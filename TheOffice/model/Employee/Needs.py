@@ -4,7 +4,7 @@ from model.Employee.Abilities import Abilities
 class Needs:
     def __init__(self):
         self.motivation = 100
-        self.hunger = 20
+        self.hunger = 25
         self.stress = 100
         self._abilities = Abilities()
 

@@ -12,6 +12,7 @@ class Employee(sprite.Sprite):
     def __init__(self, x, y, name, company):
         sprite.Sprite.__init__(self)
         self.name = name
+        self.current_position = -1
         self.company_observer = company
         self.init_sprite(x, y)
         self.init_data()
@@ -21,12 +22,30 @@ class Employee(sprite.Sprite):
 
     def init_sprite(self, x, y):
 
+        self.WALK_LEFT = 0
+        self.WALK_LEFT2 = 1
+        self.WALK_LEFT3 = 2
+        self.WALK_LEFT4 = 3
+        self.WALK_RIGHT = 4
+        self.WALK_RIGHT2 = 5
+        self.WALK_RIGHT3 = 6
+        self.WALK_RIGHT4 = 7
+        img_names = [
+            "employee_walk_left.png",
+            "employee_walk_left2.png",
+            "employee_walk_left3.png",
+            "employee_walk_left2.png",
+            "employee_walk_right.png",
+            "employee_walk_right2.png",
+            "employee_walk_right3.png",
+            "employee_walk_right2.png",
+        ]
         self.image = image.load("../resources/employees/employee.png")
+        self.walk_images = [image.load("../resources/employees/" + img_name) for img_name in img_names]
         self.mask = mask.from_surface(self.image)
         self.rect = Rect(x, y, self.image.get_width(), self.image.get_height())
 
     def attach_desk(self, action_objects):
-        print(action_objects.taken)
         self.desk_observer = action_objects
 
     def detach_action_object(self):
@@ -37,7 +56,7 @@ class Employee(sprite.Sprite):
         self._stats = Statistics()
         self._needs = Needs()
         self._abilities = Abilities()
-        self.destination_room = None
+        self.destination = None
 
     def make_sale(self):
         sale = self._calculator.calculate_sale()
@@ -56,7 +75,13 @@ class Employee(sprite.Sprite):
     def update_company(self, papers):
         self.company_observer.update_papers(papers)
 
+    def change_walking_sprite(self, walking_sprite):
+        self.image = self.walk_images[walking_sprite]
+        self.current_position = walking_sprite
 
-
-    def sitting_sprite(self):
+    def sitting_sprite_right(self):
         self.image = image.load("../resources/employees/employee_sit.png")
+    def sitting_sprite_left(self):
+        self.image = image.load("../resources/employees/employee_sit2.png")
+    def sitting_sprite_back(self):
+        self.image = image.load("../resources/employees/employee_sit3.png")
