@@ -22,7 +22,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     sys.exit(0)
                 self.employee_controller.grab_employee_event(event)
-            self.screen.fill((136, 205, 235))
+            self.screen.fill((155, 232, 255))
             self.employee_controller.employee_service.drag_emp_if_selected()
             self.update_text()
             self.mouse_controller.scroll_view()
