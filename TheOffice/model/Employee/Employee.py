@@ -45,10 +45,13 @@ class Employee(sprite.Sprite):
         self.mask = mask.from_surface(self.image)
         self.rect = Rect(x, y, self.image.get_width(), self.image.get_height())
 
-    def attach_desk(self, action_objects):
+    def set_desk(self, action_objects):
         self.desk_observer = action_objects
 
-    def detach_action_object(self):
+    def is_sitting_down(self):
+        return self.desk_observer != None
+
+    def remove_from_desk(self):
         self.desk_observer = None
         self.image = image.load("../resources/employees/employee.png")
 
@@ -85,3 +88,6 @@ class Employee(sprite.Sprite):
         self.image = image.load("../resources/employees/employee_sit2.png")
     def sitting_sprite_back(self):
         self.image = image.load("../resources/employees/employee_sit3.png")
+
+    def is_hungry(self):
+        return self._needs.hunger <= 10

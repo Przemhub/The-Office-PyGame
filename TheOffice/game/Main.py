@@ -2,6 +2,7 @@ import sys
 
 import pygame
 
+from controller.BuildController import BuildingController
 from controller.EmployeeController import EmployeeController
 from controller.MouseController import MouseController
 from model.Company import CompanyData
@@ -23,10 +24,10 @@ class Game:
                     sys.exit(0)
                 self.employee_controller.grab_employee_event(event)
             self.screen.fill((155, 232, 255))
-            self.employee_controller.employee_service.drag_emp_if_selected()
+            self.employee_controller.drag_employee()
             self.update_text()
             self.mouse_controller.scroll_view()
-            self.employee_controller.employee_service.check_every_employee()
+            self.employee_controller.check_employees_needs()
             self.draw()
             self.clock.tick(30)
             pygame.display.flip()
@@ -41,20 +42,20 @@ class Game:
             (255, 255, 255))
 
     def init_objects(self):
-        self.build_service = BuildingService()
-        self.build_service.build_office((0, 0))
-        self.build_service.build_office((1, 0))
-        self.build_service.build_dining_room((2, 0))
-        self.employee_controller = EmployeeController(self.build_service)
+        self.building_controller = BuildingController()
+        self.building_controller.build_office((0, 0))
+        self.building_controller.build_office((1, 0))
+        self.building_controller.build_dining_room((2, 0))
+        self.employee_controller = EmployeeController(self.building_controller.get_room_board())
         self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
-                                                self.build_service.room_board)
+                                                self.building_controller.get_room_board())
         self._company = CompanyData()
-        self.employee_controller.employee_service.create_employee(100, 10, "Bob", self._company)
-        self.employee_controller.employee_service.create_employee(120, 280, "Bob2", self._company)
+        self.employee_controller.create_employee(100, 10, "Bob", self._company)
+        self.employee_controller.create_employee(120, 280, "Bob2", self._company)
 
     def draw(self):
-        for floor in range(0, len(self.build_service.room_board)):
-            for room in self.build_service.room_board[floor].values():
+        for floor in range(0, len(self.building_controller.get_room_board())):
+            for room in self.building_controller.get_room_board()[floor].values():
                 self.screen.blit(room.image, room.rect)
         for emp in self.employee_controller.employee_service.employee_list:
             self.screen.blit(emp.image, emp.rect)

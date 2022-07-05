@@ -14,17 +14,17 @@ class EmployeeService:
         self.init_threads()
 
     def init_threads(self):
-        self.hustle_thread = WorkingService()
-        self.consumer_thread = ConsumeService()
-        self.needs_thread = NeedsService()
-        self.hustle_thread.start()
-        self.needs_thread.start()
-        self.consumer_thread.start()
+        self.working_service_conc = WorkingService()
+        self.consumer_service_conc = ConsumeService()
+        self.needs_service_conc = NeedsService()
+        self.working_service_conc.start()
+        self.needs_service_conc.start()
+        self.consumer_service_conc.start()
 
     def create_employee(self, x, y, name, company):
         emp = Employee(x, y, name, company)
         self.employee_list.append(emp)
-        self.needs_thread.insert_emp(emp)
+        self.needs_service_conc.insert_emp(emp)
 
     def init_extras(self):
         self.dragged_emp_i = -1
@@ -45,19 +45,19 @@ class EmployeeService:
         # print(index)
         # print(self.employee_list[index].rect)
         if self.employee_list[index].rect.collidepoint(pygame.mouse.get_pos()):
-            self.handle_emp_desk_collide_event(self.employee_list[self.dragged_emp_i])
+            self.handle_emp_desk_collide(self.employee_list[self.dragged_emp_i])
         self.dragged_emp_i = -1
 
     def handle_emp_desk_detach_event(self, emp):
         if emp.desk_observer != None:
             emp.desk_observer.taken = False
-            emp.detach_action_object()
+            emp.remove_from_desk()
             try:
-                self.hustle_thread.pop_emp(emp)
+                self.working_service_conc.pop_emp(emp)
             except:
-                self.consumer_thread.pop_emp(emp)
+                self.consumer_service_conc.pop_emp(emp)
 
-    def handle_emp_desk_collide_event(self, emp):
+    def handle_emp_desk_collide(self, emp):
         for floor_i in range(0, len(self.room_board)):
             room_list = list(self.room_board[floor_i].values())
             for room_i in range(0, len(self.room_board[floor_i])):
@@ -71,14 +71,14 @@ class EmployeeService:
                         # print("czy taken?", self.action_object_taken(room_list, room_i, desk_i))
                         if self.action_object_taken(room_list, room_i, desk_i) == False:
                             if type(room_list[room_i]).__name__ == "DiningRoom":
-                                self.consumer_thread.insert_emp(emp)
+                                self.consumer_service_conc.insert_emp(emp)
                                 # print(self.consumer_thread.emp_dict)
                             elif type(room_list[room_i]).__name__ == "OfficeRoom":
-                                self.hustle_thread.insert_emp(emp)
+                                self.working_service_conc.insert_emp(emp)
                             self.update_action_object_status(room_list[room_i].action_objects[desk_i])
                             self.adjust_emp_to_action_object(emp, room_list[room_i].action_objects[desk_i],
                                                              room_list[room_i], desk_i)
-                            emp.attach_desk(room_list[room_i].action_objects[desk_i])
+                            emp.set_desk(room_list[room_i].action_objects[desk_i])
 
     def adjust_emp_to_action_object(self, emp, desk, room, desk_i):
         print(desk_i)
@@ -107,9 +107,10 @@ class EmployeeService:
     def check_needs_and_move(self, emp):
         # only use it once when the needs are below threshold
         if emp.destination is None:
-            if emp._needs.hunger <= 10:
-                if emp.desk_observer != None:
-                    emp.detach_action_object()
+            if emp.is_hungry():
+                if emp.is_sitting_down():
+                    emp.remove_from_desk()
+                    #available room searching algorithm
                 for floor_i in range(0, len(self.room_board)):
                     room_list = list(self.room_board[floor_i].values())
                     for room_i in range(0, len(self.room_board[floor_i])):
@@ -130,7 +131,7 @@ class EmployeeService:
         else:
             if self.move_to_destination_check_if_arrived(emp):
                 self.change_destination(emp)
-
+    
     def change_destination(self, emp):
         if emp.destination.__class__.__base__.__name__ == "Room":
             for action_object in emp.destination.action_objects:
@@ -140,11 +141,11 @@ class EmployeeService:
                     break
         elif emp.destination.__class__.__base__.__name__ == "ActionObject":
             emp.rect = emp.rect.move(5, 0)
-            self.consumer_thread.insert_emp(emp)
+            self.consumer_service_conc.insert_emp(emp)
             self.update_action_object_status(emp.destination)
             self.adjust_emp_to_action_object(emp, emp.destination, emp.destination.room,
                                              emp.destination.room.action_objects.index(emp.destination))
-            emp.attach_desk(emp.destination)
+            emp.set_desk(emp.destination)
             emp.destination = None
 
     def move_to_destination_check_if_arrived(self, emp):
