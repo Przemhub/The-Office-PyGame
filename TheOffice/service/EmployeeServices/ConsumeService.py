@@ -1,15 +1,14 @@
 from pygame import time
 
-from service.EmployeeServices.EmployeeTaskThread import EmployeeTaskThread
+from service.EmployeeThreads.EmployeeTaskThread import EmployeeTaskThread
 
 
-class ConsumeService(EmployeeTaskThread):
-    def __init__(self):
-        super().__init__()
+class ConsumeService:
+    def __init__(self,thread):
+        self.thread = thread
 
-    def run(self):
-        while True:
-            if self.empty_dict() == False:
-                for employee in  self.emp_dict.values():
-                    employee._needs.eat()
-                time.wait(3500)
+    def insert_emp(self,emp):
+        self.thread.insert_emp_hunger(emp)
+
+    def pop_emp(self,emp):
+        self.thread.pop_emp_hunger(emp)

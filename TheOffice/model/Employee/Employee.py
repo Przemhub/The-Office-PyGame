@@ -64,6 +64,7 @@ class Employee(sprite.Sprite):
 
     def make_sale(self):
         sale = self._calculator.calculate_sale()
+        print("sale",sale)
         self._stats.papers_sold += sale
         self.update_company(sale)
 
@@ -89,6 +90,7 @@ class Employee(sprite.Sprite):
         self.image = image.load("../resources/employees/employee_sit2.png")
     def sitting_sprite_back(self):
         self.image = image.load("../resources/employees/employee_sit3.png")
-
+    def is_satiated(self):
+        return self._needs.hunger >= 99
     def is_hungry(self):
         return self._needs.hunger <= 10

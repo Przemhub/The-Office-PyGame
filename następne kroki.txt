@@ -1,0 +1,10 @@
+parametr stres w potrzebach pracownika
+spada kiedy pracownik siedzi przy biurku
+kiedy nie siedzi przy biurku stres sie nie zmienia
+rosnie kiedy pracownik odpoczywa
+
+
+nowy pokój: pokój rozrywki rekreacyjny
+assety graficzne: stol do bilarda, konsola, rzutki
+konsola daje wiecej frajdy ale tylko 1 osoba moze grac, bilard daje mniej
+ale wiecej graczy moze grac
