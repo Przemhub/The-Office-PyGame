@@ -50,7 +50,6 @@ class EmployeeService:
 
     def handle_emp_desk_detach_event(self, emp):
         if emp.desk_observer != None:
-            emp.desk_observer.taken = False
             emp.remove_from_desk()
             try:
                 self.working_service_conc.pop_emp(emp)
@@ -76,21 +75,24 @@ class EmployeeService:
                             elif type(room_list[room_i]).__name__ == "OfficeRoom":
                                 self.working_service_conc.insert_emp(emp)
                             self.update_action_object_status(room_list[room_i].action_objects[desk_i])
+                            emp.set_desk(room_list[room_i].action_objects[desk_i])
                             self.adjust_emp_to_action_object(emp, room_list[room_i].action_objects[desk_i],
                                                              room_list[room_i], desk_i)
-                            emp.set_desk(room_list[room_i].action_objects[desk_i])
+
 
     def adjust_emp_to_action_object(self, emp, desk, room, desk_i):
-        print(desk_i)
+
         if type(room).__name__ == "DiningRoom":
             # print(desk_i)
             emp.rect.x = desk.rect.x
             emp.rect.y = desk.rect.y
             if desk_i % 2 != 0:
                 emp.sitting_sprite_right()
+                print("adjusted")
                 emp.rect = emp.rect.move(-20, - 27)
             else:
                 emp.sitting_sprite_left()
+
                 emp.rect = emp.rect.move(0, - 30)
 
 
@@ -105,39 +107,51 @@ class EmployeeService:
             self.check_needs_and_move(emp)
 
     def check_needs_and_move(self, emp):
-        # only use it once when the needs are below threshold
-        if emp.destination is None:
-            if emp.is_hungry():
-                if emp.is_sitting_down():
+
+        if emp.is_hungry():
+            # only use it once when the needs are below threshold
+            if emp.destination is None:
+                if emp.is_sitting_down() and type(emp.desk_observer).__name__ != "DiningChair":
                     emp.remove_from_desk()
-                    #available room searching algorithm
-                for floor_i in range(0, len(self.room_board)):
-                    room_list = list(self.room_board[floor_i].values())
-                    for room_i in range(0, len(self.room_board[floor_i])):
-                        if emp.rect.colliderect(room_list[room_i].rect):
-                            room_dist = 1
-                            while True:
-                                if room_i + room_dist < len(room_list):
-                                    if type(room_list[room_i + room_dist]).__name__ == "DiningRoom":
-                                        emp.destination = room_list[room_i + room_dist]
-                                        break
-                                if room_i - room_dist >= 0:
-                                    if type(room_list[room_i - room_dist]).__name__ == "DiningRoom":
-                                        emp.destination = room_list[room_i - room_dist]
-                                        break
-                                if room_i - room_dist < 0 and room_i + room_dist >= len(room_list):
-                                    break
-                                room_dist += 1
-        else:
-            if self.move_to_destination_check_if_arrived(emp):
-                self.change_destination(emp)
-    
+                    try:
+                        self.working_service_conc.pop_emp(emp)
+                    except:
+                        self.consumer_service_conc.pop_emp(emp)
+                self.search_for_room(emp)
+            else:
+                if self.move_to_destination_check_if_arrived(emp):
+                    self.change_destination(emp)
+
+    def search_for_room(self, emp):
+        # available room searching algorithm
+        for floor_i in range(0, len(self.room_board)):
+            room_list = list(self.room_board[floor_i].values())
+            for room_i in range(0, len(self.room_board[floor_i])):
+                #find the room the employee is in
+                if emp.rect.colliderect(room_list[room_i].rect):
+                    room_dist = 1
+                    while True:
+                        #if we have not yet exceeded the number of rooms in list, look for rooms right from current
+                        if room_i + room_dist < len(room_list):
+                            if type(room_list[room_i + room_dist]).__name__ == "DiningRoom":
+                                emp.destination = room_list[room_i + room_dist]
+                                break
+                        #look for rooms left from current room
+                        if room_i - room_dist >= 0:
+                            if type(room_list[room_i - room_dist]).__name__ == "DiningRoom":
+                                emp.destination = room_list[room_i - room_dist]
+                                break
+                        # if we exceeded the number of rooms in list
+                        if room_i - room_dist < 0 and room_i + room_dist >= len(room_list):
+                            break
+                        room_dist += 1
+
     def change_destination(self, emp):
         if emp.destination.__class__.__base__.__name__ == "Room":
             for action_object in emp.destination.action_objects:
                 if not self.action_object_taken_by_object(action_object):
                     emp.destination = action_object
-                    print(action_object.rect)
+                    # print(action_object.rect)
                     break
         elif emp.destination.__class__.__base__.__name__ == "ActionObject":
             emp.rect = emp.rect.move(5, 0)
@@ -146,6 +160,8 @@ class EmployeeService:
             self.adjust_emp_to_action_object(emp, emp.destination, emp.destination.room,
                                              emp.destination.room.action_objects.index(emp.destination))
             emp.set_desk(emp.destination)
+            print("emp desk: ",emp.desk_observer)
+            print("desk status",emp.desk_observer.taken)
             emp.destination = None
 
     def move_to_destination_check_if_arrived(self, emp):
@@ -162,7 +178,7 @@ class EmployeeService:
             return True
 
         emp.rect = emp.rect.move(x, y)
-        self.animate_employee(direction)
+        self.animate_employee(direction,emp)
         return False
 
     def action_object_taken(self, room_list, room_i, desk_i):
@@ -177,27 +193,27 @@ class EmployeeService:
     def update_action_object_status(self, action_object):
         action_object.taken = True
 
-    def animate_employee(self, direction):
+    def animate_employee(self, direction,employee):
 
         if  pygame.time.get_ticks() - self.previous_time > self.wait_time:
             self.previous_time = pygame.time.get_ticks()
-            for employee in self.employee_list:
-                if direction == 'L':
-                    if employee.current_position == employee.WALK_LEFT:
-                        employee.change_walking_sprite(employee.WALK_LEFT2)
-                    elif employee.current_position == employee.WALK_LEFT2:
-                        employee.change_walking_sprite(employee.WALK_LEFT3)
-                    elif employee.current_position == employee.WALK_LEFT3:
-                        employee.change_walking_sprite(employee.WALK_LEFT4)
-                    else:
-                        employee.change_walking_sprite(employee.WALK_LEFT)
-                elif direction == 'R':
-                    if employee.current_position == employee.WALK_RIGHT:
-                        employee.change_walking_sprite(employee.WALK_RIGHT2)
-                    elif employee.current_position == employee.WALK_RIGHT2:
-                        employee.change_walking_sprite(employee.WALK_RIGHT3)
-                    elif employee.current_position == employee.WALK_RIGHT3:
-                        employee.change_walking_sprite(employee.WALK_RIGHT4)
-                    else:
-                        employee.change_walking_sprite(employee.WALK_RIGHT)
-                    print(employee.current_position)
+            if direction == 'L':
+                if employee.current_position == employee.WALK_LEFT:
+                    employee.change_walking_sprite(employee.WALK_LEFT2)
+                elif employee.current_position == employee.WALK_LEFT2:
+                    employee.change_walking_sprite(employee.WALK_LEFT3)
+                elif employee.current_position == employee.WALK_LEFT3:
+                    employee.change_walking_sprite(employee.WALK_LEFT4)
+                else:
+                    employee.change_walking_sprite(employee.WALK_LEFT)
+            elif direction == 'R':
+                if employee.current_position == employee.WALK_RIGHT:
+                    employee.change_walking_sprite(employee.WALK_RIGHT2)
+                elif employee.current_position == employee.WALK_RIGHT2:
+                    employee.change_walking_sprite(employee.WALK_RIGHT3)
+                elif employee.current_position == employee.WALK_RIGHT3:
+                    employee.change_walking_sprite(employee.WALK_RIGHT4)
+                else:
+                    employee.change_walking_sprite(employee.WALK_RIGHT)
+                # print(employee.current_position)
+

@@ -52,6 +52,7 @@ class Game:
         self._company = CompanyData()
         self.employee_controller.create_employee(100, 10, "Bob", self._company)
         self.employee_controller.create_employee(120, 280, "Bob2", self._company)
+        self.employee_controller.employee_service.employee_list[0]._needs.hunger = 60
 
     def draw(self):
         for floor in range(0, len(self.building_controller.get_room_board())):

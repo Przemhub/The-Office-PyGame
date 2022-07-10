@@ -52,6 +52,7 @@ class Employee(sprite.Sprite):
         return self.desk_observer != None
 
     def remove_from_desk(self):
+        self.desk_observer.taken = False
         self.desk_observer = None
         self.image = image.load("../resources/employees/employee.png")
 

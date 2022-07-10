@@ -1,4 +1,10 @@
-kiedy jeden pracownik jest godny to wszyscy pracownicy wstaja ze stanowiska i ida jesc
-kiedy jeden pracownik znajdzie miejsce, wsyzscy pracownicy przestaja isc i stoja w miejscu
+pracownik po dojściu do miejsca docelowego (stółowki) siada na krześle
+ potem wstaje i stoi
 
-to tak jakby jeden pracownik, niewazne jaki kontrolowal ich wszystkich 
+pracownik zajmuje siedzenie po prawej ale wstaje i mozna nim poruszac i
+nadal wydaje sie jesc (hunger rosnie) dopiero jak postawi sie go przy innej stolowce
+i podniesie to hunger spada no ale krzeslo w ktorym poprzednio siedzial jest
+zajete
+
+- krzeslo zajete ale pracownik na nim nie siedzi 
+- krzeslo zajete nawet jak pracownik zmieni kreslo
