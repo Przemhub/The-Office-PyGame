@@ -60,6 +60,7 @@ class Employee(sprite.Sprite):
         self._stats = Statistics()
         self._needs = Needs()
         self._abilities = Abilities()
+        self.direction = ''
         self.destination = None
 
     def make_sale(self):
@@ -91,6 +92,6 @@ class Employee(sprite.Sprite):
     def sitting_sprite_back(self):
         self.image = image.load("../resources/employees/employee_sit3.png")
     def is_satiated(self):
-        return self._needs.hunger >= 99
+        return self._needs.hunger > 99
     def is_hungry(self):
         return self._needs.hunger <= 10

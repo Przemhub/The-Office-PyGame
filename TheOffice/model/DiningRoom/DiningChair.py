@@ -1,11 +1,11 @@
 from pygame import Rect
 
-from model.ActionObject import ActionObject
+from model.Furniture import Furniture
 
 
-class DiningChair(ActionObject):
+class DiningChair(Furniture):
     def __init__(self, x, y, room):
-        ActionObject.__init__(self)
+        Furniture.__init__(self)
         self.taken = False
         self.rect = Rect(x, y, 20, 37)
         self.room = room

@@ -7,7 +7,7 @@ class CompanyData:
 
     def update_papers(self,papers):
         self.papers_sold += papers
-        self.money += papers * 10
+        self.money += papers * 5
 
     def update_emp_num(self):
         self.employee_num += 1

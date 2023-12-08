@@ -1,8 +1,3 @@
-from pygame import time
-
-from service.EmployeeThreads.EmployeeTaskThread import EmployeeTaskThread
-
-
 class WorkingService:
     def __init__(self,thread):
         self.thread = thread

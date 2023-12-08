@@ -9,7 +9,6 @@ class DiningRoom(Room):
     def __init__(self, y, room_board):
         Room.__init__(self)
         self.neighbour_rooms = room_board[y]
-        self.action_objects = []
         self.init_sprite(y)
         self.init_tables()
 

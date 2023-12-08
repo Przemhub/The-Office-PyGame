@@ -1,6 +1,6 @@
 from pygame import sprite
 
 
-class ActionObject:
+class Furniture:
     def __init__(self):
         pass

@@ -1,0 +1,5 @@
+kiedy są wszystkie miejsca zajęte w gabinecie, pracownicy zatrzymują się 
+na progu pokoju
+
+poszukiwanie wolnych pokoi jest zjebane, index przekracza dlugosc listy
+room_list

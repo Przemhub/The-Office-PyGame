@@ -29,3 +29,5 @@ class OfficeRoom(Room):
             OfficeDesk(self.rect.x + 200, self.rect.y + 300, self),
             OfficeDesk(self.rect.x + 275, self.rect.y + 300, self)
         ]
+
+
