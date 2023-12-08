@@ -52,7 +52,7 @@ class EmployeeService:
         self.dragged_emp_i = -1
 
     def handle_emp_desk_detach_event(self, emp):
-        if emp.desk_observer != None:
+        if emp.assigned_furniture != None:
             emp.remove_from_desk()
 
             self.working_service_conc.pop_emp(emp)
@@ -100,32 +100,21 @@ class EmployeeService:
         for emp in self.employee_list:
             self.check_needs_and_move(emp)
 
-    def check_needs_and_move(self, emp):
+    def check_needs_and_move(self, emp : Employee):
+        # the moment when employee starts feeling hungry
         if emp.is_hungry():
-            # the moment when employee starts feeling hungry
             if emp.destination is None:
-                if emp.is_sitting_down() and type(emp.desk_observer).__name__ != "DiningChair":
+                if emp.is_sitting_down() and type(emp.assigned_furniture).__name__ != "DiningChair":
                     emp.remove_from_desk()
                     self.working_service_conc.pop_emp(emp)
 
                 self.search_for_room(emp,"DiningRoom")
-            else:
-                self.move_emp_towards_destination(emp)
-                if self.emp_arrived_at_destination(emp):
-                    self.change_destination(emp, self.search_destination(emp))
-        elif type(emp.desk_observer).__name__ != "OfficeDesk":
-            if emp.destination is None or emp.is_sitting_down():
-                if emp.is_satiated():
-                    if emp.is_sitting_down():
-                        emp.remove_from_desk()
-
-                    self.consumer_service_conc.pop_emp(emp)
-
-                    self.search_for_room(emp, "OfficeRoom")
-            else:
-                self.move_emp_towards_destination(emp)
-                if self.emp_arrived_at_destination(emp):
-                    self.change_destination(emp, self.search_destination(emp))
+        elif emp.is_idle():
+            self.search_for_room(emp, "OfficeRoom")
+        if emp.destination is not None:
+            self.move_emp_towards_destination(emp)
+            if self.emp_arrived_at_destination(emp):
+                self.change_destination(emp, self.search_destination(emp))
 
     def search_for_room(self, emp, dest_room):
         # available room searching algorithm
@@ -144,11 +133,12 @@ class EmployeeService:
                                 emp.destination = room_list[room_i + room_dist]
                                 break
                         # look for rooms on left
-                        if room_i - room_dist >= 0:
-                            if type(room_list[room_i - room_dist]).__name__ == dest_room and room_list[room_i + room_dist].is_free():
+                        if room_i - room_dist > 0:
+                            if type(room_list[room_i - room_dist]).__name__ == dest_room and room_list[room_i - room_dist].is_free():
                                 emp.destination = room_list[room_i - room_dist]
                                 break
-
+                        if room_i + room_dist >= len(room_list) and room_i - room_dist <= 0:
+                            break
                         room_dist += 1
 
 

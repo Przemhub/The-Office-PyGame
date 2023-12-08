@@ -18,7 +18,7 @@ class Employee(sprite.Sprite):
         self.init_data()
         self._calculator = SaleCalculator(self._needs, self._stats)
         self.company_observer.update_emp_num()
-        self.desk_observer = None
+        self.assigned_furniture = None
 
     def init_sprite(self, x, y):
 
@@ -46,14 +46,14 @@ class Employee(sprite.Sprite):
         self.rect = Rect(x, y, self.image.get_width(), self.image.get_height())
 
     def set_desk(self, action_objects):
-        self.desk_observer = action_objects
+        self.assigned_furniture = action_objects
 
     def is_sitting_down(self):
-        return self.desk_observer != None
+        return self.assigned_furniture is not None
 
     def remove_from_desk(self):
-        self.desk_observer.taken = False
-        self.desk_observer = None
+        self.assigned_furniture.taken = False
+        self.assigned_furniture = None
         self.image = image.load("../resources/employees/employee.png")
 
     def init_data(self):
@@ -65,7 +65,7 @@ class Employee(sprite.Sprite):
 
     def make_sale(self):
         sale = self._calculator.calculate_sale()
-        print("sale",sale)
+        print("sale", sale)
         self._stats.papers_sold += sale
         self.update_company(sale)
 
@@ -87,11 +87,18 @@ class Employee(sprite.Sprite):
 
     def sitting_sprite_right(self):
         self.image = image.load("../resources/employees/employee_sit.png")
+
     def sitting_sprite_left(self):
         self.image = image.load("../resources/employees/employee_sit2.png")
+
     def sitting_sprite_back(self):
         self.image = image.load("../resources/employees/employee_sit3.png")
+
     def is_satiated(self):
         return self._needs.hunger > 99
+
     def is_hungry(self):
         return self._needs.hunger <= 10
+
+    def is_idle(self):
+        return not self.is_sitting_down() and self.destination is None
