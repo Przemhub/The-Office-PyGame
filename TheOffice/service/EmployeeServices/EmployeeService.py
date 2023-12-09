@@ -1,6 +1,6 @@
-import pygame
-
+from pygame import time, mouse
 from model.Employee.Employee import Employee
+from model.Ground import Ground
 from service.EmployeeServices.ConsumeService import ConsumeService
 from service.EmployeeServices.NeedsService import NeedsService
 from service.EmployeeServices.WorkingService import WorkingService
@@ -9,54 +9,53 @@ from service.EmployeeThreads.EmployeeTaskThread import EmployeeTaskThread
 
 
 class EmployeeService:
-    def __init__(self, room_board):
+    def __init__(self, room_board, ground: Ground):
         self.employee_list = []
         self.init_extras()
         self.room_board = room_board
+        self.ground = ground
+        self.initial_ticks = time.get_ticks()
         self.init_threads()
 
     def init_threads(self):
         self.emp_task_thread = EmployeeTaskThread()
         self.emp_need_thread = EmployeeNeedThread()
-        self.working_service_conc = WorkingService(self.emp_task_thread)
-        self.consumer_service_conc = ConsumeService(self.emp_task_thread)
-        self.needs_service_conc = NeedsService(self.emp_need_thread)
+        self.working_service_t = WorkingService(self.emp_task_thread)
+        self.consumer_service_t = ConsumeService(self.emp_task_thread)
+        self.needs_service_t = NeedsService(self.emp_need_thread)
         self.emp_task_thread.start()
         self.emp_need_thread.start()
 
     def create_employee(self, x, y, name, company):
         emp = Employee(x, y, name, company)
         self.employee_list.append(emp)
-        self.needs_service_conc.insert_emp(emp)
+        self.needs_service_t.insert_emp(emp)
 
     def init_extras(self):
         self.dragged_emp_i = -1
-        self.previous_time = pygame.time.get_ticks()
+        self.previous_time = time.get_ticks()
         self.wait_time = 0.1 * 1000
 
     def drag_emp_if_selected(self):
         if self.dragged_emp_i != -1:
-            self.employee_list[self.dragged_emp_i].rect.centerx = pygame.mouse.get_pos()[0]
-            self.employee_list[self.dragged_emp_i].rect.centery = pygame.mouse.get_pos()[1]
+            self.employee_list[self.dragged_emp_i].rect.centerx = mouse.get_pos()[0]
+            self.employee_list[self.dragged_emp_i].rect.centery = mouse.get_pos()[1]
 
     def pick_up_employee(self, index):
-        if self.employee_list[index].rect.collidepoint(pygame.mouse.get_pos()):
+        if self.employee_list[index].rect.collidepoint(mouse.get_pos()):
             self.dragged_emp_i = index
             self.handle_emp_desk_detach_event(self.employee_list[self.dragged_emp_i])
 
     def put_down_employee(self, index):
-        # print(index)
-        # print(self.employee_list[index].rect)
-        if self.employee_list[index].rect.collidepoint(pygame.mouse.get_pos()):
+        if self.employee_list[index].rect.collidepoint(mouse.get_pos()):
             self.handle_emp_desk_collide(self.employee_list[self.dragged_emp_i])
         self.dragged_emp_i = -1
 
     def handle_emp_desk_detach_event(self, emp):
-        if emp.assigned_furniture != None:
+        if emp.assigned_furniture is not None:
             emp.remove_from_desk()
-
-            self.working_service_conc.pop_emp(emp)
-            self.consumer_service_conc.pop_emp(emp)
+            self.working_service_t.pop_emp(emp)
+            self.consumer_service_t.pop_emp(emp)
 
     def handle_emp_desk_collide(self, emp):
         for floor_i in range(0, len(self.room_board)):
@@ -64,18 +63,16 @@ class EmployeeService:
             for room_i in range(0, len(self.room_board[floor_i])):
                 for desk_i in range(0, len(room_list[room_i].action_objects)):
                     if emp.rect.colliderect(room_list[room_i].action_objects[desk_i].rect):
-                        if self.action_object_taken(room_list, room_i, desk_i) == False:
+                        if self.action_object_taken(room_list, room_i, desk_i) is False:
                             if type(room_list[room_i]).__name__ == "DiningRoom":
-                                self.consumer_service_conc.insert_emp(emp)
+                                self.consumer_service_t.insert_emp(emp)
                             elif type(room_list[room_i]).__name__ == "OfficeRoom":
-                                self.working_service_conc.insert_emp(emp)
+                                self.working_service_t.insert_emp(emp)
                             self.update_action_object_status(room_list[room_i].action_objects[desk_i])
                             emp.set_desk(room_list[room_i].action_objects[desk_i])
-                            self.adjust_emp_to_action_object(emp, room_list[room_i].action_objects[desk_i],
-                                                             room_list[room_i], desk_i)
+                            self.adjust_emp_to_action_object(emp, room_list[room_i].action_objects[desk_i], room_list[room_i], desk_i)
 
     def adjust_emp_to_action_object(self, emp, desk, room, desk_i):
-
         if type(room).__name__ == "DiningRoom":
             # print(desk_i)
             emp.rect.x = desk.rect.x
@@ -88,30 +85,38 @@ class EmployeeService:
                 emp.sitting_sprite_left()
 
                 emp.rect = emp.rect.move(0, - 30)
-
-
         elif type(room).__name__ == "OfficeRoom":
             emp.rect.x = desk.rect.x
             emp.rect.y = desk.rect.y
             emp.rect = emp.rect.move(10, - 10)
             emp.sitting_sprite_back()
 
-    def check_every_employee(self):
+    def check_employees_needs_and_move(self):
         for emp in self.employee_list:
-            self.check_needs_and_move(emp)
+            self.check_emp_needs_and_move(emp)
+            if not emp.is_sitting_down():
+                self.gravity_employee(emp)
 
-    def check_needs_and_move(self, emp : Employee):
+    def check_emp_needs_and_move(self, emp: Employee):
         # the moment when employee starts feeling hungry
         if emp.is_hungry():
             if emp.destination is None:
                 if emp.is_sitting_down() and type(emp.assigned_furniture).__name__ != "DiningChair":
                     emp.remove_from_desk()
-                    self.working_service_conc.pop_emp(emp)
+                    self.working_service_t.pop_emp(emp)
 
-                self.search_for_room(emp,"DiningRoom")
+                self.search_for_room(emp, "DiningRoom")
+        elif emp.is_satiated() and emp.is_sitting_down():
+            emp.remove_from_desk()
+            self.consumer_service_t.pop_emp(emp)
+            self.search_for_room(emp, "OfficeRoom")
+        elif emp.is_sitting_down():
+            emp.destination = None
+        # when employee just stands on ground
         elif emp.is_idle():
             self.search_for_room(emp, "OfficeRoom")
-        if emp.destination is not None:
+        # movement logic towards destination
+        if emp.destination is not None and not emp.is_dragged() and self.ground.is_touching(emp):
             self.move_emp_towards_destination(emp)
             if self.emp_arrived_at_destination(emp):
                 self.change_destination(emp, self.search_destination(emp))
@@ -141,8 +146,7 @@ class EmployeeService:
                             break
                         room_dist += 1
 
-
-    def search_destination(self,emp):
+    def search_destination(self, emp):
         # looking for a Room
         if emp.destination.__class__.__base__.__name__ == "Room":
             for action_object in emp.destination.action_objects:
@@ -152,12 +156,11 @@ class EmployeeService:
         elif emp.destination.__class__.__base__.__name__ == "Furniture":
             emp.rect = emp.rect.move(5, 0)
             if type(emp.destination).__name__ == "OfficeDesk":
-                self.working_service_conc.insert_emp(emp)
+                self.working_service_t.insert_emp(emp)
             elif type(emp.destination).__name__ == "DiningChair":
-                self.consumer_service_conc.insert_emp(emp)
+                self.consumer_service_t.insert_emp(emp)
             return None
         return emp.destination
-
 
     def change_destination(self, emp, destination):
         if destination is None:
@@ -170,7 +173,6 @@ class EmployeeService:
 
     def move_emp_towards_destination(self, emp):
         x = 0
-        y = 0
         emp.direction = ''
         if emp.destination.rect.x > emp.rect.x + 5:
             x = 5
@@ -178,9 +180,12 @@ class EmployeeService:
         elif emp.destination.rect.x < emp.rect.x - 5:
             x = -5
             emp.direction = 'L'
-        emp.rect = emp.rect.move(x, y)
+        emp.rect = emp.rect.move(x, 0)
         self.animate_employee(emp)
 
+    def gravity_employee(self, emp: Employee):
+        if not self.ground.is_touching(emp):
+            emp.rect = emp.rect.move(0, 12)
 
     def emp_arrived_at_destination(self, emp):
         if not (emp.destination.rect.x > emp.rect.x + 5 or emp.destination.rect.x < emp.rect.x - 5):
@@ -200,8 +205,8 @@ class EmployeeService:
         action_object.taken = True
 
     def animate_employee(self, employee):
-        if pygame.time.get_ticks() - self.previous_time > self.wait_time:
-            self.previous_time = pygame.time.get_ticks()
+        if time.get_ticks() - self.previous_time > self.wait_time:
+            self.previous_time = time.get_ticks()
             if employee.direction == 'L':
                 if employee.current_position == employee.WALK_LEFT:
                     employee.change_walking_sprite(employee.WALK_LEFT2)
@@ -220,4 +225,9 @@ class EmployeeService:
                     employee.change_walking_sprite(employee.WALK_RIGHT4)
                 else:
                     employee.change_walking_sprite(employee.WALK_RIGHT)
-                # print(employee.current_position)
+
+    def delay_by_frames(self, frames):
+        delay = time.get_ticks() - self.initial_ticks
+        if delay > frames:
+            self.initial_ticks = time.get_ticks()
+        return delay <= frames

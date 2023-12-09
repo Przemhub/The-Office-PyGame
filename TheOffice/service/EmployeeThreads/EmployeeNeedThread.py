@@ -6,8 +6,7 @@ class EmployeeNeedThread(Thread):
     def __init__(self):
         super().__init__()
         self.emp_dict = {}
-
-
+        self.stop = False
 
     def insert_emp(self, employee):
         self.emp_dict[id(employee)] = employee
@@ -24,9 +23,12 @@ class EmployeeNeedThread(Thread):
         return self.emp_dict.get(identity)
 
     def run(self):
-        while True:
+        while not self.stop:
             if self.empty_dict() == False:
                 for employee in self.emp_dict.values():
                     if employee.can_work():
                         employee._needs.increase_hunger()
                 time.wait(10000)
+
+    def destroy(self):
+        self.stop = True

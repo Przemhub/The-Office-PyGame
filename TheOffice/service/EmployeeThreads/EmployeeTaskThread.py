@@ -8,6 +8,7 @@ class EmployeeTaskThread(Thread):
         self.work_dict = {}
         self.hunger_dict = {}
         self.stress_dict = {}
+        self.stop = False
         super().__init__()
 
     def empty_dict(self):
@@ -34,7 +35,7 @@ class EmployeeTaskThread(Thread):
         self.stress_dict.pop(id(emp))
 
     def run(self):
-        while True:
+        while not self.stop:
             if self.empty_dict() == False:
                 i = 0
                 for employee in self.work_dict.values():
@@ -49,3 +50,6 @@ class EmployeeTaskThread(Thread):
                 for employee in self.hunger_dict.values():
                     employee._needs.eat()
                 time.wait(3000)
+
+    def destroy(self):
+        self.stop = True

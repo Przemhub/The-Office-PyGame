@@ -1,9 +1,9 @@
-class WorkingService:
-    def __init__(self,thread):
-        self.thread = thread
+from service.EmployeeThreads.EmployeeTaskThread import EmployeeTaskThread
 
-    def start(self):
-        self.thread.start()
+
+class WorkingService:
+    def __init__(self,thread : EmployeeTaskThread):
+        self.thread = thread
 
     def insert_emp(self, emp):
         self.thread.insert_emp_work(emp)

@@ -1,5 +1,4 @@
-from pygame import sprite, image, mask
-from pygame.rect import Rect
+from pygame import sprite, image, mask, mouse, Rect
 
 from model.Employee.Abilities import Abilities
 from model.Employee.Needs import Needs
@@ -102,3 +101,9 @@ class Employee(sprite.Sprite):
 
     def is_idle(self):
         return not self.is_sitting_down() and self.destination is None
+
+    def is_dragged(self):
+        return self.rect.collidepoint(mouse.get_pos())
+
+    def is_sitting_on(self, furniture):
+        return type(self.assigned_furniture).__name__ == furniture

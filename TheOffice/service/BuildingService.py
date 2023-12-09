@@ -1,4 +1,5 @@
 from model.DiningRoom.DiningRoom import DiningRoom
+from model.GameRoom.GameRoom import GameRoom
 from model.OfficeRoom.OfficeRoom import OfficeRoom
 
 
@@ -23,3 +24,11 @@ class BuildingService:
         else:
             dining = DiningRoom(board_pos[1], self.room_board)
             self.room_board[board_pos[1]][id(dining)] = dining
+
+    def build_game_room(self, board_pos):
+        if board_pos[1] >= len(self.room_board):
+            raise Exception("board_pos[1] exceeded the actual number of floors", len(self.room_board),
+                            self.room_board)
+        else:
+            gaming = GameRoom(board_pos[1], self.room_board)
+            self.room_board[board_pos[1]][id(gaming)] = gaming

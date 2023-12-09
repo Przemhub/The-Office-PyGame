@@ -1,10 +1,8 @@
-from pygame import time
-
 from service.EmployeeThreads.EmployeeTaskThread import EmployeeTaskThread
 
 
 class ConsumeService:
-    def __init__(self,thread):
+    def __init__(self,thread : EmployeeTaskThread):
         self.thread = thread
 
     def insert_emp(self,emp):
@@ -12,3 +10,5 @@ class ConsumeService:
 
     def pop_emp(self,emp):
         self.thread.pop_emp_hunger(emp)
+
+

@@ -6,6 +6,7 @@ from controller.BuildController import BuildingController
 from controller.EmployeeController import EmployeeController
 from controller.MouseController import MouseController
 from model.Company import CompanyData
+from model.Ground import Ground
 
 
 class Game:
@@ -20,13 +21,15 @@ class Game:
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.employee_controller.employee_service.emp_need_thread.destroy()
+                    self.employee_controller.employee_service.emp_task_thread.destroy()
                     sys.exit(0)
                 self.employee_controller.grab_employee_event(event)
             self.screen.fill((155, 232, 255))
             self.employee_controller.drag_employee()
             self.update_text()
             self.mouse_controller.scroll_view()
-            self.employee_controller.check_employees_needs()
+            self.employee_controller.move_employees()
             self.draw()
             self.clock.tick(30)
             pygame.display.flip()
@@ -52,14 +55,15 @@ class Game:
         self.screen.blit(self.needs, pygame.Rect(300, 250, 1, 1))
 
     def init_objects(self):
+        self.ground = Ground(self.screen)
         self.building_controller = BuildingController()
         self.building_controller.build_office((0, 0))
         self.building_controller.build_office((1, 0))
-        self.building_controller.build_office((2, 0))
-        self.building_controller.build_dining_room((3, 0))
-        self.employee_controller = EmployeeController(self.building_controller.get_room_board())
+        self.building_controller.build_dining_room((2, 0))
+        self.building_controller.build_game_room((3, 0))
+        self.employee_controller = EmployeeController(self.building_controller.get_room_board(), self.ground)
         self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
-                                                self.building_controller.get_room_board())
+                                                self.building_controller.get_room_board(), self.ground)
         self._company = CompanyData()
         self.employee_controller.create_employee(100, 200, "Bob", self._company)
         self.employee_controller.create_employee(120, 280, "Bob2", self._company)

@@ -1,5 +1,8 @@
+from service.EmployeeThreads.EmployeeNeedThread import EmployeeNeedThread
+
+
 class NeedsService:
-    def __init__(self, thread):
+    def __init__(self, thread : EmployeeNeedThread):
         self.thread = thread
 
     def insert_emp(self, emp):
