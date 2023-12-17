@@ -30,4 +30,3 @@ class Needs:
         self.hunger -= self._abilities.stomach
         if self.hunger < 0:
             self.hunger = 0
-

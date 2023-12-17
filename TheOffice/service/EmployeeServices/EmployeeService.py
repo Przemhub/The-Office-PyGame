@@ -121,7 +121,7 @@ class EmployeeService:
                 if not emp.is_eating():
                     self.task_service_t.pop_emp(emp, "hunger")
                     self.task_service_t.pop_emp(emp, "work")
-                    self.search_for_room(emp,"GameRoom")
+                    self.search_for_room(emp, "GameRoom")
             # when employee just stands on ground
             elif emp.is_idle():
                 self.task_service_t.pop_emp(emp, "hunger")

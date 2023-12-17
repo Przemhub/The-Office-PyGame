@@ -21,7 +21,6 @@ class Employee(sprite.Sprite):
         self.assigned_furniture = None
 
     def init_sprite(self, x, y):
-
         self.WALK_LEFT = 0
         self.WALK_LEFT2 = 1
         self.WALK_LEFT3 = 2
@@ -82,21 +81,17 @@ class Employee(sprite.Sprite):
     def update_company(self, papers):
         self.company_observer.update_papers(papers)
 
-    def change_walking_sprite(self, walking_sprite):
-        self.image = self.walk_images[walking_sprite]
-        self.current_position = walking_sprite
+    def is_idle(self):
+        return self.destination is None and not (self.is_working() or self.is_eating() or self.is_playing())
 
-    def sitting_sprite_right(self):
-        self.image = image.load("../resources/employees/employee_sit.png")
+    def is_working(self):
+        return type(self.assigned_furniture).__name__ == "OfficeDesk" and not (self.is_hungry() or self.is_stressed())
 
-    def sitting_sprite_left(self):
-        self.image = image.load("../resources/employees/employee_sit2.png")
+    def is_playing(self):
+        return type(self.assigned_furniture).__name__ == "GameSpot" and not (self.is_hungry() or self.is_relaxed())
 
-    def sitting_sprite_back(self):
-        self.image = image.load("../resources/employees/employee_sit3.png")
-
-    def sitting_sprite_back_game(self):
-        self.image = image.load("../resources/employees/employee_sit4.png")
+    def is_eating(self):
+        return type(self.assigned_furniture).__name__ == "DiningChair" and not self.is_satiated()
 
     def is_satiated(self):
         return self._needs.hunger > 99
@@ -113,20 +108,24 @@ class Employee(sprite.Sprite):
     def is_unmotivated(self):
         return self._needs.motivation <= 0
 
-    def is_idle(self):
-        return self.destination is None and not (self.is_working() or self.is_eating() or self.is_playing())
-
-    def is_working(self):
-        return type(self.assigned_furniture).__name__ == "OfficeDesk" and not (self.is_hungry() or self.is_stressed())
-
-    def is_playing(self):
-        return type(self.assigned_furniture).__name__ == "GameSpot" and not (self.is_hungry() or self.is_relaxed())
-
-    def is_eating(self):
-        return type(self.assigned_furniture).__name__ == "DiningChair" and not self.is_satiated()
-
     def is_dragged(self):
         return self.rect.collidepoint(mouse.get_pos())
 
     def is_sitting_on(self, furniture):
         return type(self.assigned_furniture).__name__ == furniture
+
+    def change_walking_sprite(self, walking_sprite):
+        self.image = self.walk_images[walking_sprite]
+        self.current_position = walking_sprite
+
+    def sitting_sprite_right(self):
+        self.image = image.load("../resources/employees/employee_sit.png")
+
+    def sitting_sprite_left(self):
+        self.image = image.load("../resources/employees/employee_sit2.png")
+
+    def sitting_sprite_back(self):
+        self.image = image.load("../resources/employees/employee_sit3.png")
+
+    def sitting_sprite_back_game(self):
+        self.image = image.load("../resources/employees/employee_sit4.png")
