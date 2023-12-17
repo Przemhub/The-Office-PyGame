@@ -1,5 +1,8 @@
+from model.Employee.Needs import Needs
+
+
 class SaleCalculator:
-    def __init__(self,needs,stats):
+    def __init__(self,needs : Needs,stats):
         self._stats = stats
         self._needs = needs
         self.init_const()

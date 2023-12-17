@@ -39,20 +39,26 @@ class Game:
             "Paper sold: " + str(self.employee_controller.employee_service.employee_list[0]._stats.papers_sold), True,
             (255, 255, 255))
         self.money = self.font.render("Money: " + str(self._company.money), True, (255, 255, 255))
-        self.needs = self.font.render(
+        self.hunger = self.font.render(
             "Hunger: " + str(self.employee_controller.employee_service.employee_list[0]._needs.hunger), True,
+            (255, 255, 255))
+        self.stress = self.font.render(
+            "Stress: " + str(self.employee_controller.employee_service.employee_list[0]._needs.stress), True,
             (255, 255, 255))
 
     def draw(self):
         for floor in range(0, len(self.building_controller.get_room_board())):
             for room in self.building_controller.get_room_board()[floor].values():
                 self.screen.blit(room.image, room.rect)
+                # for action_obj in room.action_objects:
+                #     pygame.draw.rect(self.screen,(0,0,0),action_obj.rect)
         for emp in self.employee_controller.employee_service.employee_list:
             self.screen.blit(emp.image, emp.rect)
 
         self.screen.blit(self.paper_sold, pygame.Rect(300, 100, 1, 1))
-        self.screen.blit(self.money, pygame.Rect(300, 200, 1, 1))
-        self.screen.blit(self.needs, pygame.Rect(300, 250, 1, 1))
+        self.screen.blit(self.money, pygame.Rect(300, 125, 1, 1))
+        self.screen.blit(self.hunger, pygame.Rect(300, 225, 1, 1))
+        self.screen.blit(self.stress, pygame.Rect(300, 200, 1, 1))
 
     def init_objects(self):
         self.ground = Ground(self.screen)
@@ -66,12 +72,9 @@ class Game:
                                                 self.building_controller.get_room_board(), self.ground)
         self._company = CompanyData()
         self.employee_controller.create_employee(100, 200, "Bob", self._company)
-        self.employee_controller.create_employee(120, 280, "Bob2", self._company)
-        # self.employee_controller.create_employee(140, 280, "Bob3", self._company)
-        # self.employee_controller.create_employee(160, 280, "Bob4", self._company)
-        # self.employee_controller.create_employee(180, 280, "Bob5", self._company)
-        # self.employee_controller.create_employee(200, 280, "Bob6", self._company)
+        # self.employee_controller.create_employee(120, 280, "Bob2", self._company)
         self.employee_controller.employee_service.employee_list[0]._needs.hunger = 20
+        self.employee_controller.employee_service.employee_list[0]._needs.stress = 20
 
     def init_texts(self):
         self.font = pygame.font.SysFont("Calibri", 24, True)

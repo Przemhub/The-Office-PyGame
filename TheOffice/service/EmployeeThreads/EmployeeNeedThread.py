@@ -28,6 +28,8 @@ class EmployeeNeedThread(Thread):
                 for employee in self.emp_dict.values():
                     if employee.can_work():
                         employee._needs.increase_hunger()
+                        if employee.is_working():
+                            employee._needs.increase_stress()
                 time.wait(10000)
 
     def destroy(self):

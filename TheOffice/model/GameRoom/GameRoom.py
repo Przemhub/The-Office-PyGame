@@ -24,12 +24,8 @@ class GameRoom(Room):
 
     def init_spots(self):
         self.action_objects = [
-            GameSpot(self.rect.x + 35, self.rect.y + 300, self),
-            GameSpot(self.rect.x + 120, self.rect.y + 300, self),
-            GameSpot(self.rect.x + 140, self.rect.y + 300, self),
-            GameSpot(self.rect.x + 227, self.rect.y + 300, self),
-            GameSpot(self.rect.x + 250, self.rect.y + 300, self),
-            GameSpot(self.rect.x + 340, self.rect.y + 300, self),
-            GameSpot(self.rect.x + 365, self.rect.y + 300, self),
-            GameSpot(self.rect.x + 454, self.rect.y + 300, self),
+            GameSpot(self.rect.x + 52, self.rect.y + 300, self),
+            GameSpot(self.rect.x + 90, self.rect.y + 300, self),
+            GameSpot(self.rect.x + 185, self.rect.y + 300, self),
+            GameSpot(self.rect.x + 300, self.rect.y + 300, self),
         ]

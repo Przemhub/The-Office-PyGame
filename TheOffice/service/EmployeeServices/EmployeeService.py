@@ -3,7 +3,7 @@ from model.Employee.Employee import Employee
 from model.Ground import Ground
 from service.EmployeeServices.ConsumeService import ConsumeService
 from service.EmployeeServices.NeedsService import NeedsService
-from service.EmployeeServices.WorkingService import WorkingService
+from service.EmployeeServices.TaskService import TaskService
 from service.EmployeeThreads.EmployeeNeedThread import EmployeeNeedThread
 from service.EmployeeThreads.EmployeeTaskThread import EmployeeTaskThread
 
@@ -20,8 +20,7 @@ class EmployeeService:
     def init_threads(self):
         self.emp_task_thread = EmployeeTaskThread()
         self.emp_need_thread = EmployeeNeedThread()
-        self.working_service_t = WorkingService(self.emp_task_thread)
-        self.consumer_service_t = ConsumeService(self.emp_task_thread)
+        self.task_service_t = TaskService(self.emp_task_thread)
         self.needs_service_t = NeedsService(self.emp_need_thread)
         self.emp_task_thread.start()
         self.emp_need_thread.start()
@@ -54,8 +53,9 @@ class EmployeeService:
     def handle_emp_desk_detach_event(self, emp):
         if emp.assigned_furniture is not None:
             emp.remove_from_desk()
-            self.working_service_t.pop_emp(emp)
-            self.consumer_service_t.pop_emp(emp)
+            self.task_service_t.pop_emp(emp, "hunger")
+            self.task_service_t.pop_emp(emp, "work")
+            self.task_service_t.pop_emp(emp, "stress")
 
     def handle_emp_desk_collide(self, emp):
         for floor_i in range(0, len(self.room_board)):
@@ -65,9 +65,11 @@ class EmployeeService:
                     if emp.rect.colliderect(room_list[room_i].action_objects[desk_i].rect):
                         if self.action_object_taken(room_list, room_i, desk_i) is False:
                             if type(room_list[room_i]).__name__ == "DiningRoom":
-                                self.consumer_service_t.insert_emp(emp)
+                                self.task_service_t.insert_emp(emp, "hunger")
                             elif type(room_list[room_i]).__name__ == "OfficeRoom":
-                                self.working_service_t.insert_emp(emp)
+                                self.task_service_t.insert_emp(emp, "work")
+                            elif type(room_list[room_i]).__name__ == "GameRoom":
+                                self.task_service_t.insert_emp(emp, "stress")
                             self.update_action_object_status(room_list[room_i].action_objects[desk_i])
                             emp.set_desk(room_list[room_i].action_objects[desk_i])
                             self.adjust_emp_to_action_object(emp, room_list[room_i].action_objects[desk_i], room_list[room_i], desk_i)
@@ -83,13 +85,24 @@ class EmployeeService:
                 emp.rect = emp.rect.move(-20, - 27)
             else:
                 emp.sitting_sprite_left()
-
                 emp.rect = emp.rect.move(0, - 30)
         elif type(room).__name__ == "OfficeRoom":
             emp.rect.x = desk.rect.x
             emp.rect.y = desk.rect.y
             emp.rect = emp.rect.move(10, - 10)
             emp.sitting_sprite_back()
+        elif type(room).__name__ == "GameRoom":
+            emp.rect.x = desk.rect.x
+            emp.rect.y = desk.rect.y
+            if desk_i < 2:
+                emp.rect = emp.rect.move(0, -9)
+                emp.sitting_sprite_back_game()
+            elif desk_i == 2:
+                emp.rect = emp.rect.move(7, - 25)
+                emp.sitting_sprite_left()
+            else:
+                emp.rect = emp.rect.move(-24, - 22)
+                emp.sitting_sprite_right()
 
     def check_employees_needs_and_move(self):
         for emp in self.employee_list:
@@ -98,25 +111,27 @@ class EmployeeService:
                 self.gravity_employee(emp)
 
     def check_emp_needs_and_move(self, emp: Employee):
-        # the moment when employee starts feeling hungry
-        if emp.is_hungry():
-            if emp.destination is None:
-                if emp.is_sitting_down() and type(emp.assigned_furniture).__name__ != "DiningChair":
-                    emp.remove_from_desk()
-                    self.working_service_t.pop_emp(emp)
-
+        if emp.destination is None:
+            # the moment when employee starts feeling hungry
+            if emp.is_hungry():
+                self.task_service_t.pop_emp(emp, "work")
+                self.task_service_t.pop_emp(emp, "stress")
                 self.search_for_room(emp, "DiningRoom")
-        elif emp.is_satiated() and emp.is_sitting_down():
-            emp.remove_from_desk()
-            self.consumer_service_t.pop_emp(emp)
-            self.search_for_room(emp, "OfficeRoom")
-        elif emp.is_sitting_down():
-            emp.destination = None
-        # when employee just stands on ground
-        elif emp.is_idle():
-            self.search_for_room(emp, "OfficeRoom")
+            elif emp.is_stressed():
+                if not emp.is_eating():
+                    self.task_service_t.pop_emp(emp, "hunger")
+                    self.task_service_t.pop_emp(emp, "work")
+                    self.search_for_room(emp,"GameRoom")
+            # when employee just stands on ground
+            elif emp.is_idle():
+                self.task_service_t.pop_emp(emp, "hunger")
+                self.task_service_t.pop_emp(emp, "stress")
+                self.search_for_room(emp, "OfficeRoom")
+
         # movement logic towards destination
         if emp.destination is not None and not emp.is_dragged() and self.ground.is_touching(emp):
+            if emp.is_sitting_down():
+                emp.remove_from_desk()
             self.move_emp_towards_destination(emp)
             if self.emp_arrived_at_destination(emp):
                 self.change_destination(emp, self.search_destination(emp))
@@ -127,9 +142,10 @@ class EmployeeService:
             room_list = list(self.room_board[floor_i].values())
 
             for room_i in range(0, len(self.room_board[floor_i])):
+                room_dist = 1
                 # found the room the employee is in
                 if emp.rect.colliderect(room_list[room_i].rect):
-                    room_dist = 1
+
                     # look for the closest destination room from employee
                     while True:
                         # if we have not yet exceeded the number of rooms in list, look for rooms on right
@@ -156,9 +172,11 @@ class EmployeeService:
         elif emp.destination.__class__.__base__.__name__ == "Furniture":
             emp.rect = emp.rect.move(5, 0)
             if type(emp.destination).__name__ == "OfficeDesk":
-                self.working_service_t.insert_emp(emp)
+                self.task_service_t.insert_emp(emp, "work")
             elif type(emp.destination).__name__ == "DiningChair":
-                self.consumer_service_t.insert_emp(emp)
+                self.task_service_t.insert_emp(emp, "hunger")
+            elif type(emp.destination).__name__ == "GameSpot":
+                self.task_service_t.insert_emp(emp, "stress")
             return None
         return emp.destination
 

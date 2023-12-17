@@ -14,6 +14,12 @@ class Needs:
         else:
             self.hunger = 100
 
+    def play(self):
+        if self.stress < 90:
+            self.stress += self._abilities.anxiety
+        else:
+            self.stress = 100
+
     def decrease_motivation(self):
         self.motivation -= self._abilities.boredom
 
@@ -25,11 +31,3 @@ class Needs:
         if self.hunger < 0:
             self.hunger = 0
 
-    def is_hungry(self):
-        return self.hunger <= 0
-
-    def is_stressed(self):
-        return self.stress <= 0
-
-    def is_motivated(self):
-        return self.motivation <= 0

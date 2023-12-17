@@ -4,6 +4,7 @@ from model.Employee.Abilities import Abilities
 from model.Employee.Needs import Needs
 from model.Employee.SaleCalculator import SaleCalculator
 from model.Employee.Statistics import Statistics
+from model.Furniture import Furniture
 
 
 class Employee(sprite.Sprite):
@@ -44,14 +45,15 @@ class Employee(sprite.Sprite):
         self.mask = mask.from_surface(self.image)
         self.rect = Rect(x, y, self.image.get_width(), self.image.get_height())
 
-    def set_desk(self, action_objects):
-        self.assigned_furniture = action_objects
+    def set_desk(self, action_object : Furniture):
+        self.assigned_furniture = action_object
 
     def is_sitting_down(self):
         return self.assigned_furniture is not None
 
     def remove_from_desk(self):
-        self.assigned_furniture.taken = False
+        if self.assigned_furniture is not None:
+            self.assigned_furniture.taken = False
         self.assigned_furniture = None
         self.image = image.load("../resources/employees/employee.png")
 
@@ -69,11 +71,11 @@ class Employee(sprite.Sprite):
         self.update_company(sale)
 
     def can_work(self):
-        if self._needs.is_hungry():
+        if self.is_hungry():
             return False
-        elif self._needs.is_motivated():
+        elif self.is_unmotivated():
             return False
-        elif self._needs.is_stressed():
+        elif self.is_stressed():
             return False
         return True
 
@@ -93,14 +95,35 @@ class Employee(sprite.Sprite):
     def sitting_sprite_back(self):
         self.image = image.load("../resources/employees/employee_sit3.png")
 
+    def sitting_sprite_back_game(self):
+        self.image = image.load("../resources/employees/employee_sit4.png")
+
     def is_satiated(self):
         return self._needs.hunger > 99
 
+    def is_relaxed(self):
+        return self._needs.stress > 99
+
     def is_hungry(self):
-        return self._needs.hunger <= 10
+        return self._needs.hunger <= self._abilities.stomach
+
+    def is_stressed(self):
+        return self._needs.stress <= self._abilities.anxiety
+
+    def is_unmotivated(self):
+        return self._needs.motivation <= 0
 
     def is_idle(self):
-        return not self.is_sitting_down() and self.destination is None
+        return self.destination is None and not (self.is_working() or self.is_eating() or self.is_playing())
+
+    def is_working(self):
+        return type(self.assigned_furniture).__name__ == "OfficeDesk" and not (self.is_hungry() or self.is_stressed())
+
+    def is_playing(self):
+        return type(self.assigned_furniture).__name__ == "GameSpot" and not (self.is_hungry() or self.is_relaxed())
+
+    def is_eating(self):
+        return type(self.assigned_furniture).__name__ == "DiningChair" and not self.is_satiated()
 
     def is_dragged(self):
         return self.rect.collidepoint(mouse.get_pos())
