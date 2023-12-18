@@ -23,14 +23,21 @@ class EmployeeNeedThread(Thread):
         return self.emp_dict.get(identity)
 
     def run(self):
+        need_i = 0
         while not self.stop:
             if self.empty_dict() == False:
                 for employee in self.emp_dict.values():
                     if employee.can_work():
-                        employee._needs.increase_hunger()
-                        if employee.is_working():
-                            employee._needs.increase_stress()
-                time.wait(10000)
+                        if need_i == 1:
+                            employee._needs.decrease_hunger()
+                            if employee.is_working():
+                                employee._needs.decrease_stress()
+                        elif need_i == 2:
+                            employee._needs.decrease_motivation()
+                            need_i = 0
+
+                need_i += 1
+                time.wait(5000)
 
     def destroy(self):
         self.stop = True

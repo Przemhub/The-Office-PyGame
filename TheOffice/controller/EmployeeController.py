@@ -1,11 +1,11 @@
 import pygame
 
-from service.EmployeeServices.EmployeeService import EmployeeService
+from service.EmployeeServices.EmployeeManagement.EmployeeManagementService import EmployeeManagementService
 
 
 class EmployeeController:
     def __init__(self, room_board, ground):
-        self.employee_service = EmployeeService(room_board, ground)
+        self.employee_service = EmployeeManagementService(room_board, ground)
 
     def create_employee(self, x, y, name, company):
         self.employee_service.create_employee(x, y, name, company)

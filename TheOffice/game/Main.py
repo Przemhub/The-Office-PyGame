@@ -46,6 +46,10 @@ class Game:
             "Stress: " + str(self.employee_controller.employee_service.employee_list[0]._needs.stress), True,
             (255, 255, 255))
 
+        self.motivation = self.font.render(
+            "Motivation: " + str(self.employee_controller.employee_service.employee_list[0]._needs.motivation), True,
+            (255, 255, 255))
+
     def draw(self):
         for floor in range(0, len(self.building_controller.get_room_board())):
             for room in self.building_controller.get_room_board()[floor].values():
@@ -59,14 +63,16 @@ class Game:
         self.screen.blit(self.money, pygame.Rect(300, 125, 1, 1))
         self.screen.blit(self.hunger, pygame.Rect(300, 225, 1, 1))
         self.screen.blit(self.stress, pygame.Rect(300, 200, 1, 1))
+        self.screen.blit(self.motivation, pygame.Rect(300, 250, 1, 1))
 
     def init_objects(self):
         self.ground = Ground(self.screen)
         self.building_controller = BuildingController()
         self.building_controller.build_office((0, 0))
-        self.building_controller.build_office((1, 0))
-        self.building_controller.build_dining_room((2, 0))
+        self.building_controller.build_dining_room((1, 0))
+        self.building_controller.build_office((2, 0))
         self.building_controller.build_game_room((3, 0))
+        self.building_controller.build_conference_room((4, 0))
         self.employee_controller = EmployeeController(self.building_controller.get_room_board(), self.ground)
         self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
                                                 self.building_controller.get_room_board(), self.ground)

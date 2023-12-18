@@ -9,24 +9,32 @@ class Needs:
         self._abilities = Abilities()
 
     def eat(self):
-        if self.hunger < 90:
+        if self.hunger <= 100 - self._abilities.stomach:
             self.hunger += self._abilities.stomach
         else:
             self.hunger = 100
 
     def play(self):
-        if self.stress < 90:
+        if self.stress <= 100 - self._abilities.anxiety:
             self.stress += self._abilities.anxiety
         else:
             self.stress = 100
 
+    def meet(self):
+        if self.motivation <= 100 - self._abilities.boredom:
+            self.motivation += self._abilities.boredom
+
     def decrease_motivation(self):
         self.motivation -= self._abilities.boredom
+        if self.motivation < 0:
+            self.motivation = 0
 
-    def increase_stress(self):
+    def decrease_stress(self):
         self.stress -= self._abilities.anxiety
+        if self.stress < 0:
+            self.stress = 0
 
-    def increase_hunger(self):
+    def decrease_hunger(self):
         self.hunger -= self._abilities.stomach
         if self.hunger < 0:
             self.hunger = 0

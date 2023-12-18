@@ -8,6 +8,7 @@ class EmployeeTaskThread(Thread):
         self.work_dict = {}
         self.hunger_dict = {}
         self.stress_dict = {}
+        self.motivation_dict = {}
         self.stop = False
         super().__init__()
 
@@ -23,6 +24,9 @@ class EmployeeTaskThread(Thread):
     def insert_emp_stress(self, emp):
         self.stress_dict[id(emp)] = emp
 
+    def insert_emp_motivation(self, emp):
+        self.motivation_dict[id(emp)] = emp
+
     def pop_emp_work(self, emp):
         if self.work_dict.__contains__(id(emp)):
             self.work_dict.pop(id(emp))
@@ -35,9 +39,13 @@ class EmployeeTaskThread(Thread):
         if self.stress_dict.__contains__(id(emp)):
             self.stress_dict.pop(id(emp))
 
+    def pop_emp_motivation(self, emp):
+        if self.motivation_dict.__contains__(id(emp)):
+            self.motivation_dict.pop(id(emp))
+
     def run(self):
         while not self.stop:
-            if self.empty_dict() == False:
+            if not self.empty_dict():
                 for employee in self.work_dict.values():
                     if employee.can_work():
                         employee.make_sale()
@@ -45,6 +53,8 @@ class EmployeeTaskThread(Thread):
                     employee._needs.eat()
                 for employee in self.stress_dict.values():
                     employee._needs.play()
+                for employee in self.motivation_dict.values():
+                    employee._needs.meet()
                 time.wait(3000)
 
     def destroy(self):

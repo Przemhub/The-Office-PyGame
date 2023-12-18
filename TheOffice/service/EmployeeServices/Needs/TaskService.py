@@ -12,6 +12,8 @@ class TaskService:
             self.task_thread.insert_emp_hunger(emp)
         elif type == "stress":
             self.task_thread.insert_emp_stress(emp)
+        elif type == "motivation":
+            self.task_thread.insert_emp_motivation(emp)
 
     def pop_emp(self, emp, type):
         if type == "work":
@@ -20,6 +22,8 @@ class TaskService:
             self.task_thread.pop_emp_hunger(emp)
         elif type == "stress":
             self.task_thread.pop_emp_stress(emp)
+        elif type == "motivation":
+            self.task_thread.pop_emp_motivation(emp)
 
 
 

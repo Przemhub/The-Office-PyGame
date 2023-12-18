@@ -44,7 +44,7 @@ class Employee(sprite.Sprite):
         self.mask = mask.from_surface(self.image)
         self.rect = Rect(x, y, self.image.get_width(), self.image.get_height())
 
-    def set_desk(self, action_object : Furniture):
+    def set_desk(self, action_object: Furniture):
         self.assigned_furniture = action_object
 
     def is_sitting_down(self):
@@ -82,7 +82,7 @@ class Employee(sprite.Sprite):
         self.company_observer.update_papers(papers)
 
     def is_idle(self):
-        return self.destination is None and not (self.is_working() or self.is_eating() or self.is_playing())
+        return self.destination is None and not (self.is_working() or self.is_eating() or self.is_playing() or self.has_meeting())
 
     def is_working(self):
         return type(self.assigned_furniture).__name__ == "OfficeDesk" and not (self.is_hungry() or self.is_stressed())
@@ -93,11 +93,17 @@ class Employee(sprite.Sprite):
     def is_eating(self):
         return type(self.assigned_furniture).__name__ == "DiningChair" and not self.is_satiated()
 
+    def has_meeting(self):
+        return type(self.assigned_furniture).__name__ == "ConferenceRoom" and not (self.is_hungry() or self.is_stressed() or self.is_motivated())
+
     def is_satiated(self):
         return self._needs.hunger > 99
 
     def is_relaxed(self):
         return self._needs.stress > 99
+
+    def is_motivated(self):
+        return self._needs.motivation > 99
 
     def is_hungry(self):
         return self._needs.hunger <= self._abilities.stomach
