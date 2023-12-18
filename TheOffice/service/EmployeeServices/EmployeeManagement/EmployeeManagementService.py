@@ -33,16 +33,19 @@ class EmployeeManagementService:
             if emp.is_hungry():
                 self.task_service_t.pop_emp(emp, "work")
                 self.task_service_t.pop_emp(emp, "stress")
+                self.task_service_t.pop_emp(emp, "motivation")
                 self.dest_service.search_for_room(emp, "DiningRoom")
             elif emp.is_stressed():
                 if not emp.is_eating():
                     self.task_service_t.pop_emp(emp, "hunger")
                     self.task_service_t.pop_emp(emp, "work")
+                    self.task_service_t.pop_emp(emp, "motivation")
                     self.dest_service.search_for_room(emp, "GameRoom")
             # when employee just stands on ground
             elif emp.is_idle():
                 self.task_service_t.pop_emp(emp, "hunger")
                 self.task_service_t.pop_emp(emp, "stress")
+                self.task_service_t.pop_emp(emp, "motivation")
                 self.dest_service.search_for_room(emp, "OfficeRoom")
         # movement logic towards destination
         if emp.destination is not None and not emp.is_dragged() and self.ground.is_touching_adjusted(emp):
@@ -59,6 +62,9 @@ class EmployeeManagementService:
 
     def init_extras(self):
         self.dragged_emp_i = -1
+        self.dragged_emp_x = [-1,-1,-1]
+        # self.dragged_emp_x = -1
+        self.falling_emp_y = -1
 
     def init_threads(self):
         self.emp_task_thread = EmployeeTaskThread()
@@ -77,6 +83,15 @@ class EmployeeManagementService:
         if self.dragged_emp_i != -1:
             self.employee_list[self.dragged_emp_i].rect.centerx = mouse.get_pos()[0]
             self.employee_list[self.dragged_emp_i].rect.centery = mouse.get_pos()[1]
+            if self.employee_list[self.dragged_emp_i].rect.centerx > self.dragged_emp_x[0] + 8:
+                self.employee_list[self.dragged_emp_i].change_dragging_sprite("R")
+                self.dragged_emp_x[0] = self.employee_list[self.dragged_emp_i].rect.centerx
+            elif self.employee_list[self.dragged_emp_i].rect.centerx < self.dragged_emp_x[0] - 8:
+                self.employee_list[self.dragged_emp_i].change_dragging_sprite("L")
+                self.dragged_emp_x[0] = self.employee_list[self.dragged_emp_i].rect.centerx
+            else:
+                self.employee_list[self.dragged_emp_i].change_dragging_sprite("C")
+                self.dragged_emp_x[0] = self.employee_list[self.dragged_emp_i].rect.centerx
 
     def pick_up_employee(self, index):
         if self.employee_list[index].rect.collidepoint(mouse.get_pos()):
@@ -103,6 +118,11 @@ class EmployeeManagementService:
     def gravity_employee(self, emp: Employee):
         if not self.ground.is_touching(emp):
             emp.rect = emp.rect.move(0, 12)
+            if emp.rect.centery > self.falling_emp_y + 20 and not emp.is_dragged():
+                emp.change_falling_sprite()
+                self.falling_emp_y = emp.rect.centery
+            else:
+                self.falling_emp_y = -1
 
     def delay_by_frames(self, frames):
         delay = time.get_ticks() - self.initial_ticks

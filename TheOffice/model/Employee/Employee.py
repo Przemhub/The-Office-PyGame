@@ -13,6 +13,7 @@ class Employee(sprite.Sprite):
         sprite.Sprite.__init__(self)
         self.name = name
         self.current_position = -1
+        self.current_drag_position = 2
         self.company_observer = company
         self.init_sprite(x, y)
         self.init_data()
@@ -29,7 +30,15 @@ class Employee(sprite.Sprite):
         self.WALK_RIGHT2 = 5
         self.WALK_RIGHT3 = 6
         self.WALK_RIGHT4 = 7
-        img_names = [
+        self.DRAG_LEFT = 0
+        self.DRAG_LEFT2 = 1
+        self.DRAG_RIGHT = 2
+        self.DRAG_RIGHT2 = 3
+        self.SIT_RIGHT = 0
+        self.SIT_LEFT = 1
+        self.SIT_BACK = 2
+        self.SIT_BACK2 = 3
+        walk_img_names = [
             "employee_walk_left.png",
             "employee_walk_left2.png",
             "employee_walk_left3.png",
@@ -39,8 +48,25 @@ class Employee(sprite.Sprite):
             "employee_walk_right3.png",
             "employee_walk_right2.png",
         ]
+        drag_img_names = [
+            "employee_drag_left2.png",
+            "employee_drag_left.png",
+            "employee.png",
+            "employee_drag_right.png",
+            "employee_drag_right2.png"
+        ]
+        sit_img_names = [
+            "employee_sit.png",
+            "employee_sit2.png",
+            "employee_sit3.png",
+            "employee_sit4.png",
+        ]
+
+        self.falling_image = image.load("../resources/employees/employee_fall.png")
         self.image = image.load("../resources/employees/employee.png")
-        self.walk_images = [image.load("../resources/employees/" + img_name) for img_name in img_names]
+        self.walk_images = [image.load("../resources/employees/" + img_name) for img_name in walk_img_names]
+        self.drag_images = [image.load("../resources/employees/" + img_name) for img_name in drag_img_names]
+        self.sit_images = [image.load("../resources/employees/" + img_name) for img_name in sit_img_names]
         self.mask = mask.from_surface(self.image)
         self.rect = Rect(x, y, self.image.get_width(), self.image.get_height())
 
@@ -94,7 +120,8 @@ class Employee(sprite.Sprite):
         return type(self.assigned_furniture).__name__ == "DiningChair" and not self.is_satiated()
 
     def has_meeting(self):
-        return type(self.assigned_furniture).__name__ == "ConferenceRoom" and not (self.is_hungry() or self.is_stressed() or self.is_motivated())
+        return type(self.assigned_furniture).__name__ == "ConferenceRoom" and not (
+                    self.is_hungry() or self.is_stressed() or self.is_motivated())
 
     def is_satiated(self):
         return self._needs.hunger > 99
@@ -124,14 +151,29 @@ class Employee(sprite.Sprite):
         self.image = self.walk_images[walking_sprite]
         self.current_position = walking_sprite
 
+    def change_dragging_sprite(self, direction):
+        if direction == "R" and self.current_drag_position < 4:
+            self.current_drag_position += 1
+        elif direction == "L" and self.current_drag_position > 0:
+            self.current_drag_position -= 1
+        elif direction == "C":
+            if self.current_drag_position > 2:
+                self.current_drag_position -= 1
+            elif self.current_drag_position < 2:
+                self.current_drag_position += 1
+        self.image = self.drag_images[self.current_drag_position]
+
+    def change_falling_sprite(self):
+        self.image = self.falling_image
+
     def sitting_sprite_right(self):
-        self.image = image.load("../resources/employees/employee_sit.png")
+        self.image = self.sit_images[self.SIT_RIGHT]
 
     def sitting_sprite_left(self):
-        self.image = image.load("../resources/employees/employee_sit2.png")
+        self.image = self.sit_images[self.SIT_LEFT]
 
     def sitting_sprite_back(self):
-        self.image = image.load("../resources/employees/employee_sit3.png")
+        self.image = self.sit_images[self.SIT_BACK]
 
     def sitting_sprite_back_game(self):
-        self.image = image.load("../resources/employees/employee_sit4.png")
+        self.image = self.sit_images[self.SIT_BACK2]
