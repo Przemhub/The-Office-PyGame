@@ -47,15 +47,14 @@ class EmployeeTaskThread(Thread):
         while not self.stop:
             if not self.empty_dict():
                 for employee in self.work_dict.values():
-                    if employee.can_work():
-                        employee.make_sale()
+                    employee.make_sale()
                 for employee in self.hunger_dict.values():
                     employee._needs.eat()
                 for employee in self.stress_dict.values():
                     employee._needs.play()
                 for employee in self.motivation_dict.values():
                     employee._needs.meet()
-                time.wait(3000)
+                time.wait(4000)
 
     def destroy(self):
         self.stop = True
