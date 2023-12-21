@@ -1,8 +1,9 @@
 from service.EmployeeServices.EmployeeManagement.CollisionService import CollisionService
 from service.EmployeeServices.Needs.TaskService import TaskService
 
+
 class DestinationSearchService:
-    def __init__(self, room_board : dict, task_service_t : TaskService):
+    def __init__(self, room_board: dict, task_service_t: TaskService):
         self.room_board = room_board
         self.task_service_t = task_service_t
 
@@ -49,10 +50,14 @@ class DestinationSearchService:
                 self.task_service_t.insert_emp(emp, "stress")
             return None
         else:
+            # in case when employee's destination spot became taken before he managed to arrive
             for action_object in emp.destination.room.action_objects:
                 if not self.action_object_taken_by_object(action_object):
                     return action_object
+            # if no other desks in the room are free, look for a different room
             self.search_for_room(emp, type(emp.destination.room).__name__)
+            if emp.destination.__class__.__base__.__name__ != "Room":
+                raise Exception("There is more employees than possible desks, so the destination searching failed")
             self.change_destination(emp, self.search_destination(emp))
         return emp.destination
 

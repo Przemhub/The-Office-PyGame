@@ -36,7 +36,7 @@ class EmployeeNeedThread(Thread):
                         employee._needs.decrease_motivation()
                         need_i = 0
                 need_i += 1
-                time.wait(5000)
+                time.wait(7000)
 
     def destroy(self):
         self.stop = True
