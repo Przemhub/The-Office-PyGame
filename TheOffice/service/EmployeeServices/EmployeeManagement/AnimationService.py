@@ -3,12 +3,14 @@ from pygame import time
 
 class AnimationService:
     def __init__(self):
-        self.previous_time = time.get_ticks()
         self.wait_time = 0.1 * 1000
+        self.previous_time_map = {}
 
     def animate_employee(self, employee):
-        if time.get_ticks() - self.previous_time > self.wait_time:
-            self.previous_time = time.get_ticks()
+        if not self.previous_time_map.__contains__(id(employee)):
+            self.previous_time_map[id(employee)] = time.get_ticks()
+        if time.get_ticks() - self.previous_time_map[id(employee)] > self.wait_time:
+            self.previous_time_map[id(employee)] = time.get_ticks()
             if employee.direction == 'L':
                 if employee.current_position == employee.WALK_LEFT:
                     employee.change_walking_sprite(employee.WALK_LEFT2)
