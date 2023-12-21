@@ -23,7 +23,7 @@ class EmployeeController:
         self.employee_service = EmployeeManagementService(room_board, ground)
 
     def create_employee(self, x, y, company):
-        self.employee_service.create_employee(x, y, self.employee_names[random.randint(0, len(self.employee_names))], company)
+        self.employee_service.create_employee(x, y, self.employee_names[random.randint(0, len(self.employee_names)-1)], company)
 
     def grab_employee_event(self, event):
         for i in range(0, len(self.employee_service.employee_list)):

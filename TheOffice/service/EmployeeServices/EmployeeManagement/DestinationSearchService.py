@@ -5,8 +5,6 @@ class DestinationSearchService:
     def __init__(self, room_board : dict, task_service_t : TaskService):
         self.room_board = room_board
         self.task_service_t = task_service_t
-        self.adjust_emp_to_action_object = CollisionService.adjust_emp_to_action_object
-        self.update_action_object_status = CollisionService.update_action_object_status
 
     def search_for_room(self, emp, dest_room):
         # available room searching algorithm
@@ -26,11 +24,11 @@ class DestinationSearchService:
                                 emp.destination = room_list[room_i + room_dist]
                                 break
                         # look for rooms on left
-                        if room_i - room_dist > 0:
+                        if room_i - room_dist >= 0:
                             if type(room_list[room_i - room_dist]).__name__ == dest_room and room_list[room_i - room_dist].is_free():
                                 emp.destination = room_list[room_i - room_dist]
                                 break
-                        if room_i + room_dist >= len(room_list) and room_i - room_dist <= 0:
+                        if room_i + room_dist >= len(room_list) and room_i - room_dist < 0:
                             break
                         room_dist += 1
 
@@ -41,7 +39,7 @@ class DestinationSearchService:
                 if not self.action_object_taken_by_object(action_object):
                     return action_object
         # looking for a Chair
-        elif emp.destination.__class__.__base__.__name__ == "Furniture":
+        elif emp.destination.__class__.__base__.__name__ == "Furniture" and not emp.destination.taken:
             emp.rect = emp.rect.move(5, 0)
             if type(emp.destination).__name__ == "OfficeDesk":
                 self.task_service_t.insert_emp(emp, "work")
@@ -50,14 +48,15 @@ class DestinationSearchService:
             elif type(emp.destination).__name__ == "GameSpot":
                 self.task_service_t.insert_emp(emp, "stress")
             return None
+        else:
+            for action_object in emp.destination.room.action_objects:
+                if not self.action_object_taken_by_object(action_object):
+                    return action_object
+            self.search_for_room(emp, type(emp.destination.room).__name__)
+            self.change_destination(emp, self.search_destination(emp))
         return emp.destination
 
     def change_destination(self, emp, destination):
-        if destination is None:
-            self.update_action_object_status(emp.destination)
-            self.adjust_emp_to_action_object(emp, emp.destination, emp.destination.room,
-                                             emp.destination.room.action_objects.index(emp.destination))
-            emp.set_desk(emp.destination)
         emp.destination = destination
 
     def emp_arrived_at_destination(self, emp):
