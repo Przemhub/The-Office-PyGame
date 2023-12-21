@@ -38,6 +38,7 @@ class Employee(sprite.Sprite):
         self.SIT_LEFT = 1
         self.SIT_BACK = 2
         self.SIT_BACK2 = 3
+        self.shake_i = -1
         walk_img_names = [
             "employee_walk_left.png",
             "employee_walk_left2.png",
@@ -61,12 +62,17 @@ class Employee(sprite.Sprite):
             "employee_sit3.png",
             "employee_sit4.png",
         ]
-
+        shake_img_names = [
+            "employee_shake.png",
+            "employee_shake2.png",
+            "employee_shake3.png"
+        ]
         self.falling_image = image.load("../resources/employees/employee_fall.png")
         self.image = image.load("../resources/employees/employee.png")
         self.walk_images = [image.load("../resources/employees/" + img_name) for img_name in walk_img_names]
         self.drag_images = [image.load("../resources/employees/" + img_name) for img_name in drag_img_names]
         self.sit_images = [image.load("../resources/employees/" + img_name) for img_name in sit_img_names]
+        self.shake_images = [image.load("../resources/employees/" + img_name) for img_name in shake_img_names]
         self.mask = mask.from_surface(self.image)
         self.rect = Rect(x, y, self.image.get_width(), self.image.get_height())
 
@@ -91,7 +97,6 @@ class Employee(sprite.Sprite):
 
     def make_sale(self):
         sale = self._calculator.calculate_sale()
-        print("sale", sale)
         self._stats.papers_sold += sale
         self.update_company(sale)
 
@@ -111,17 +116,16 @@ class Employee(sprite.Sprite):
         return self.destination is None and not (self.is_working() or self.is_eating() or self.is_playing() or self.has_meeting())
 
     def is_working(self):
-        return type(self.assigned_furniture).__name__ == "OfficeDesk" and not (self.is_hungry() or self.is_stressed())
+        return type(self.assigned_furniture).__name__ == "OfficeDesk"
 
     def is_playing(self):
-        return type(self.assigned_furniture).__name__ == "GameSpot" and not (self.is_hungry() or self.is_relaxed())
+        return type(self.assigned_furniture).__name__ == "GameSpot" and not self.is_relaxed()
 
     def is_eating(self):
         return type(self.assigned_furniture).__name__ == "DiningChair" and not self.is_satiated()
 
     def has_meeting(self):
-        return type(self.assigned_furniture).__name__ == "ConferenceRoom" and not (
-                    self.is_hungry() or self.is_stressed() or self.is_motivated())
+        return type(self.assigned_furniture).__name__ == "ConferenceChair" and not self.is_motivated()
 
     def is_satiated(self):
         return self._needs.hunger > 99
@@ -139,7 +143,7 @@ class Employee(sprite.Sprite):
         return self._needs.stress <= self._abilities.anxiety
 
     def is_unmotivated(self):
-        return self._needs.motivation <= 0
+        return self._needs.motivation <= self._abilities.boredom
 
     def is_dragged(self):
         return self.rect.collidepoint(mouse.get_pos())
@@ -163,6 +167,11 @@ class Employee(sprite.Sprite):
                 self.current_drag_position += 1
         self.image = self.drag_images[self.current_drag_position]
 
+    def change_shaking_sprite(self):
+        self.shake_i += 1
+        if self.shake_i > 2:
+            self.shake_i = 0
+        self.image = self.shake_images[self.shake_i]
     def change_falling_sprite(self):
         self.image = self.falling_image
 

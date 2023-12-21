@@ -17,7 +17,6 @@ class EmployeeManagementService:
         self.init_extras()
         self.room_board = room_board
         self.ground = ground
-        self.initial_ticks = time.get_ticks()
         self.init_threads()
         self.init_services()
 
@@ -36,16 +35,16 @@ class EmployeeManagementService:
                 self.task_service_t.pop_emp(emp, "motivation")
                 self.dest_service.search_for_room(emp, "DiningRoom")
             elif emp.is_stressed():
-                if not emp.is_eating():
-                    self.task_service_t.pop_emp(emp, "hunger")
-                    self.task_service_t.pop_emp(emp, "work")
+                if not emp.is_eating() or emp.is_satiated():
                     self.task_service_t.pop_emp(emp, "motivation")
+                    self.task_service_t.pop_emp(emp, "work")
+                    self.task_service_t.pop_emp(emp, "hunger")
                     self.dest_service.search_for_room(emp, "GameRoom")
             # when employee just stands on ground
             elif emp.is_idle():
-                self.task_service_t.pop_emp(emp, "hunger")
                 self.task_service_t.pop_emp(emp, "stress")
                 self.task_service_t.pop_emp(emp, "motivation")
+                self.task_service_t.pop_emp(emp, "hunger")
                 self.dest_service.search_for_room(emp, "OfficeRoom")
         # movement logic towards destination
         if emp.destination is not None and not emp.is_dragged() and self.ground.is_touching_adjusted(emp):
@@ -62,9 +61,17 @@ class EmployeeManagementService:
 
     def init_extras(self):
         self.dragged_emp_i = -1
-        self.dragged_emp_x = [-1,-1,-1]
-        # self.dragged_emp_x = -1
+        self.dragged_emp_x = -1
         self.falling_emp_y = -1
+
+        self.dragged_emp_x_queue = []
+        self.cursor = 0
+        self.FIRST = 3
+        self.SECOND = 2
+        self.THIRD = 1
+        self.LAST = 0
+
+        self.initial_ticks = [time.get_ticks()]
 
     def init_threads(self):
         self.emp_task_thread = EmployeeTaskThread()
@@ -81,17 +88,34 @@ class EmployeeManagementService:
 
     def drag_emp_if_selected(self):
         if self.dragged_emp_i != -1:
-            self.employee_list[self.dragged_emp_i].rect.centerx = mouse.get_pos()[0]
-            self.employee_list[self.dragged_emp_i].rect.centery = mouse.get_pos()[1]
-            if self.employee_list[self.dragged_emp_i].rect.centerx > self.dragged_emp_x[0] + 8:
+            if self.employee_list[self.dragged_emp_i].rect.centerx > self.dragged_emp_x + 5:
                 self.employee_list[self.dragged_emp_i].change_dragging_sprite("R")
-                self.dragged_emp_x[0] = self.employee_list[self.dragged_emp_i].rect.centerx
-            elif self.employee_list[self.dragged_emp_i].rect.centerx < self.dragged_emp_x[0] - 8:
+                self.dragged_emp_x = self.employee_list[self.dragged_emp_i].rect.centerx
+            elif self.employee_list[self.dragged_emp_i].rect.centerx < self.dragged_emp_x - 5:
                 self.employee_list[self.dragged_emp_i].change_dragging_sprite("L")
-                self.dragged_emp_x[0] = self.employee_list[self.dragged_emp_i].rect.centerx
+                self.dragged_emp_x = self.employee_list[self.dragged_emp_i].rect.centerx
             else:
                 self.employee_list[self.dragged_emp_i].change_dragging_sprite("C")
-                self.dragged_emp_x[0] = self.employee_list[self.dragged_emp_i].rect.centerx
+                self.dragged_emp_x = self.employee_list[self.dragged_emp_i].rect.centerx
+
+            self.dragged_emp_x_queue.append(self.employee_list[self.dragged_emp_i].rect.centerx)
+            if len(self.dragged_emp_x_queue) > 4:
+                self.dragged_emp_x_queue.pop(self.LAST)
+                if self.employee_is_shaken():
+                    if self.delay_by_frames(100, 1):
+                        self.employee_list[self.dragged_emp_i].change_shaking_sprite()
+                    if self.delay_by_frames(1500, 0):
+                        self.employee_list[self.dragged_emp_i]._needs.decrease_stress()
+                        if not self.employee_list[self.dragged_emp_i].is_stressed():
+                            self.employee_list[self.dragged_emp_i]._needs.meet()
+
+
+            self.employee_list[self.dragged_emp_i].rect.centerx = mouse.get_pos()[0]
+            self.employee_list[self.dragged_emp_i].rect.centery = mouse.get_pos()[1]
+
+    def employee_is_shaken(self):
+        return self.dragged_emp_x_queue[self.SECOND] + 10 < self.dragged_emp_x_queue[self.LAST] and self.dragged_emp_x_queue[self.FIRST] > \
+               self.dragged_emp_x_queue[self.THIRD] + 10
 
     def pick_up_employee(self, index):
         if self.employee_list[index].rect.collidepoint(mouse.get_pos()):
@@ -124,8 +148,11 @@ class EmployeeManagementService:
             else:
                 self.falling_emp_y = -1
 
-    def delay_by_frames(self, frames):
-        delay = time.get_ticks() - self.initial_ticks
+    def delay_by_frames(self, frames, initial_tick_id):
+        if initial_tick_id == len(self.initial_ticks):
+            self.initial_ticks.append(time.get_ticks())
+
+        delay = time.get_ticks() - self.initial_ticks[initial_tick_id]
         if delay > frames:
-            self.initial_ticks = time.get_ticks()
-        return delay <= frames
+            self.initial_ticks[initial_tick_id] = time.get_ticks()
+        return delay >= frames

@@ -12,7 +12,7 @@ class Ground:
         return emp.rect.y >= self.y
 
     def is_touching_adjusted(self, emp: Employee):
-        return emp.rect.y + 8 >= self.y
+        return emp.rect.y + 30 >= self.y
 
     def move(self, y):
         self.y += y

@@ -10,7 +10,7 @@ class Needs:
 
     def eat(self):
         if self.hunger <= 100 - self._abilities.stomach:
-            self.hunger += self._abilities.stomach
+            self.hunger += self._abilities.stomach * 2
         else:
             self.hunger = 100
 
