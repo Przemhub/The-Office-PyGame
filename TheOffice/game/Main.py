@@ -24,6 +24,9 @@ class Game:
                     self.employee_controller.employee_service.emp_need_thread.destroy()
                     self.employee_controller.employee_service.emp_task_thread.destroy()
                     sys.exit(0)
+                if event.type == pygame.KEYDOWN:
+                    print("pressed")
+                    self.employee_controller.create_employee(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], self._company)
                 self.employee_controller.grab_employee_event(event)
             self.screen.fill((155, 232, 255))
             self.employee_controller.drag_employee()
@@ -77,7 +80,7 @@ class Game:
         self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
                                                 self.building_controller.get_room_board(), self.ground)
         self._company = CompanyData()
-        self.employee_controller.create_employee(100, 200, "Bob", self._company)
+        self.employee_controller.create_employee(100, 200, self._company)
         # self.employee_controller.create_employee(120, 280, "Bob2", self._company)
         self.employee_controller.employee_service.employee_list[0]._needs.hunger = 20
         self.employee_controller.employee_service.employee_list[0]._needs.stress = 20

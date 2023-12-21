@@ -1,3 +1,5 @@
+import random
+
 import pygame
 
 from service.EmployeeServices.EmployeeManagement.EmployeeManagementService import EmployeeManagementService
@@ -5,10 +7,23 @@ from service.EmployeeServices.EmployeeManagement.EmployeeManagementService impor
 
 class EmployeeController:
     def __init__(self, room_board, ground):
+        self.employee_names = [
+            "George",
+            "Michael",
+            "Bob",
+            "Kayle",
+            "John",
+            "Mark",
+            "Dane",
+            "Tom",
+            "Bill",
+            "Howard",
+            "Harry"
+        ]
         self.employee_service = EmployeeManagementService(room_board, ground)
 
-    def create_employee(self, x, y, name, company):
-        self.employee_service.create_employee(x, y, name, company)
+    def create_employee(self, x, y, company):
+        self.employee_service.create_employee(x, y, self.employee_names[random.randint(0, len(self.employee_names))], company)
 
     def grab_employee_event(self, event):
         for i in range(0, len(self.employee_service.employee_list)):
