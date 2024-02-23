@@ -4,6 +4,7 @@ import pygame
 
 from controller.BuildController import BuildingController
 from controller.EmployeeController import EmployeeController
+from controller.KeyboardController import KeyboardController
 from controller.MouseController import MouseController
 from model.Company import CompanyData
 from model.Ground import Ground
@@ -20,20 +21,7 @@ class Game:
     def main_loop(self):
         while True:
             for event in pygame.event.get():
-                if event.type is pygame.QUIT:
-                    self.employee_controller.employee_service.emp_need_thread.destroy()
-                    self.employee_controller.employee_service.emp_task_thread.destroy()
-                    sys.exit(0)
-                if event.type == pygame.KEYDOWN:
-                    if event.key is pygame.K_q:
-                        print("pressed")
-                        self.employee_controller.create_employee(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], self._company)
-                    elif event.key is pygame.K_1:
-                        self.building_controller.build_office((5, 0))
-                    elif event.key is pygame.K_2:
-                        self.building_controller.build_dining_room((5, 0))
-                    elif event.key is pygame.K_3:
-                        self.building_controller.build_game_room((5, 0))
+                self.keyboard_controller.execute_event(event)
                 self.employee_controller.grab_employee_event(event)
             self.screen.fill((155, 232, 255))
             self.employee_controller.drag_employee()
@@ -77,17 +65,21 @@ class Game:
 
     def init_objects(self):
         self.ground = Ground(self.screen)
+        self._company = CompanyData()
+
         self.building_controller = BuildingController()
-        self.building_controller.build_office((0, 0))
-        self.building_controller.build_dining_room((1, 0))
-        self.building_controller.build_office((2, 0))
-        self.building_controller.build_game_room((3, 0))
-        self.building_controller.build_conference_room((4, 0))
         self.employee_controller = EmployeeController(self.building_controller.get_room_board(), self.ground)
         self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
                                                 self.building_controller.get_room_board(), self.ground)
-        self._company = CompanyData()
+        self.keyboard_controller = KeyboardController(self.employee_controller, self.building_controller, self._company)
         self.employee_controller.create_employee(100, 200, self._company)
+
+
+        self.building_controller.build_office((0, 0))
+        self.building_controller.build_dining_room((1, 0))
+        self.building_controller.build_game_room((3, 0))
+        self.building_controller.build_conference_room((4, 0))
+
         # self.employee_controller.create_employee(120, 280, "Bob2", self._company)
         self.employee_controller.employee_service.employee_list[0]._needs.hunger = 20
         self.employee_controller.employee_service.employee_list[0]._needs.stress = 20
