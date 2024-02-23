@@ -15,17 +15,13 @@ class DiningRoom(Room):
         self.image = image.load("../resources/rooms/dining_room.png")
         self.mask = mask.from_surface(self.image)
         (x, y) = self.get_base_coordinates()
-        self.rect = Rect(x, 230 - floor * self.image.get_height(), self.image.get_width(),
+        self.rect = Rect(x, y - floor * self.image.get_height(), self.image.get_width(),
                          self.image.get_height())
 
     def init_tables(self):
         self.action_objects = [
             DiningChair(self.rect.x + 35, self.rect.y + 300, self),
             DiningChair(self.rect.x + 120, self.rect.y + 300, self),
-            DiningChair(self.rect.x + 140, self.rect.y + 300, self),
-            DiningChair(self.rect.x + 227, self.rect.y + 300, self),
-            DiningChair(self.rect.x + 250, self.rect.y + 300, self),
-            DiningChair(self.rect.x + 340, self.rect.y + 300, self),
-            DiningChair(self.rect.x + 365, self.rect.y + 300, self),
-            DiningChair(self.rect.x + 454, self.rect.y + 300, self),
+            DiningChair(self.rect.x + 220, self.rect.y + 300, self),
+            DiningChair(self.rect.x + 315, self.rect.y + 300, self)
         ]

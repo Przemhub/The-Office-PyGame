@@ -21,6 +21,10 @@ class Game:
     def main_loop(self):
         while True:
             for event in pygame.event.get():
+                if event.type is pygame.QUIT:
+                    self.employee_controller.employee_service.emp_need_thread.destroy()
+                    self.employee_controller.employee_service.emp_task_thread.destroy()
+                    pygame.sys.exit(0)
                 self.keyboard_controller.execute_event(event)
                 self.employee_controller.grab_employee_event(event)
             self.screen.fill((155, 232, 255))
@@ -50,6 +54,8 @@ class Game:
 
     def draw(self):
         for floor in range(0, len(self.building_controller.get_room_board())):
+            corridor = self.building_controller.building_service.corridors[floor]
+            self.screen.blit(corridor.image, corridor.rect)
             for room in self.building_controller.get_room_board()[floor].values():
                 self.screen.blit(room.image, room.rect)
                 # for action_obj in room.action_objects:
@@ -68,13 +74,14 @@ class Game:
         self._company = CompanyData()
 
         self.building_controller = BuildingController()
+        self.building_controller.build_corridor((0, 0))
         self.employee_controller = EmployeeController(self.building_controller.get_room_board(), self.ground)
         self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
-                                                self.building_controller.get_room_board(), self.ground)
+                                                self.building_controller.get_room_board(), self.ground, self.building_controller.building_service.corridors)
         self.keyboard_controller = KeyboardController(self.employee_controller, self.building_controller, self._company)
+
+
         self.employee_controller.create_employee(100, 200, self._company)
-
-
         self.building_controller.build_office((0, 0))
         self.building_controller.build_dining_room((1, 0))
         self.building_controller.build_game_room((3, 0))

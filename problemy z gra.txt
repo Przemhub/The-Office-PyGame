@@ -1,20 +1,13 @@
-relatywna pozycja pokoju budowanego do obecnej pozycji kamery, musi nie być relatywna a byc przystająca do pokojów
- - sloty z pokojami: muszą mieć ustaloną pozycję fixed, niezależną od kamery
+jak umożliwić dodawanie pokoju tak aby 
 
+otóż pozycja myszki
 
-room_board to podwojna tablica tab[x][y] gdize 
-- x jest numerem piętra
-- y jest id pokoju
+zrobic konkretne prostokątne przestrzenie na ktorych mozna dodawac pokoje
 
-elementem tej tablicy jest obiekt pokoju
+dining_room ma być długości tych dwóch prostokątów
 
-board_pos to tuple (x,y) gdzie:
-x to piętro
-y to kolejność pokoju w szeregu
+na kazdym piętrze powinna być lista pokoi ktora odpowiada pozycji pokoi 
 
-room board nie zawiera informacji o pozycji pokoju, bajwyzej o piętrze
-nie mozna wykorzystac room-board do zadania
-
-trzeba najprawdopodobniej pracowac na obiekcie Room poniewaz on ustala pozycję pokoju względem kamery i board_post[0]
-
-budowanie polega na podaiu numeru piętra i kolejności
+no i potrzebny jest indeks z listy ktory:
+- będzie mnożnikiem pozycji pokoju podążającego za kursorem
+- będzie insertował pokój do listy w momencie upuszczenia pokoju

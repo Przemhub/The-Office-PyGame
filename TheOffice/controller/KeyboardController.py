@@ -8,10 +8,6 @@ class KeyboardController:
         self._company = company
 
     def execute_event(self, e):
-        if e.type is pygame.QUIT:
-            self.employee_controller.employee_service.emp_need_thread.destroy()
-            self.employee_controller.employee_service.emp_task_thread.destroy()
-            pygame.sys.exit(0)
         if e.type == pygame.KEYDOWN:
             if e.key is pygame.K_q:
                 print("pressed")

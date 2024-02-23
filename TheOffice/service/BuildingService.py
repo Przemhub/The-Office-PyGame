@@ -1,4 +1,5 @@
 from model.ConferenceRoom.ConferenceRoom import ConferenceRoom
+from model.Corridor.Corridor import Corridor
 from model.DiningRoom.DiningRoom import DiningRoom
 from model.GameRoom.GameRoom import GameRoom
 from model.OfficeRoom.OfficeRoom import OfficeRoom
@@ -7,6 +8,7 @@ from model.OfficeRoom.OfficeRoom import OfficeRoom
 class BuildingService:
     def __init__(self):
         self.room_board = {0: {}}
+        self.corridors = []
 
     def build_floor(self):
         self.room_board[len(self.room_board)] = {}
@@ -44,3 +46,6 @@ class BuildingService:
         else:
             conference = ConferenceRoom(board_pos[1], self.room_board)
             self.room_board[board_pos[1]][id(conference)] = conference
+
+    def build_corridor(self, board_pos):
+        self.corridors.append(Corridor(board_pos[1]))

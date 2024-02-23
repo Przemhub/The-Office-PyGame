@@ -20,5 +20,8 @@ class BuildingController:
     def build_conference_room(self, board_pos):
         self.building_service.build_conference_room(board_pos)
 
+    def build_corridor(self, board_pos):
+        self.building_service.build_corridor(board_pos)
+
     def get_room_board(self):
         return self.building_service.room_board
