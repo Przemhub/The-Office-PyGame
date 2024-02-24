@@ -10,7 +10,7 @@ class DestinationSearchService:
     def search_for_room(self, emp, dest_room):
         # available room searching algorithm
         for floor_i in range(0, len(self.room_board)):
-            room_list = list(self.room_board[floor_i].values())
+            room_list = list(self.room_board[floor_i])
 
             for room_i in range(0, len(self.room_board[floor_i])):
                 room_dist = 1

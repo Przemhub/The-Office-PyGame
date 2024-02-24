@@ -56,7 +56,7 @@ class Game:
         for floor in range(0, len(self.building_controller.get_room_board())):
             corridor = self.building_controller.building_service.corridors[floor]
             self.screen.blit(corridor.image, corridor.rect)
-            for room in self.building_controller.get_room_board()[floor].values():
+            for room in self.building_controller.get_room_board()[floor]:
                 self.screen.blit(room.image, room.rect)
                 # for action_obj in room.action_objects:
                 #     pygame.draw.rect(self.screen,(0,0,0),action_obj.rect)

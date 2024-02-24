@@ -26,8 +26,8 @@ class MouseController:
     def move_objects(self, x, y):
         for emp in self.emp_list:
             emp.rect = emp.rect.move(x, y)
-        for floor in self.room_board.values():
-            for room in floor.values():
+        for floor in self.room_board:
+            for room in floor:
                 room.rect = room.rect.move(x, y)
                 for a_obj in room.action_objects:
                     a_obj.rect = a_obj.rect.move(x, y)

@@ -21,9 +21,9 @@ class Room(sprite.Sprite):
             x = self.get_first_room().rect.x
             y = self.get_first_room().rect.y
 
-        for room in self.neighbour_rooms.values():
+        for room in self.neighbour_rooms:
             x += room.image.get_width()
         return x, y
 
     def get_first_room(self):
-        return list(self.neighbour_rooms.values())[0]
+        return self.neighbour_rooms[0]

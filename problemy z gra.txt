@@ -11,3 +11,7 @@ na kazdym piętrze powinna być lista pokoi ktora odpowiada pozycji pokoi
 no i potrzebny jest indeks z listy ktory:
 - będzie mnożnikiem pozycji pokoju podążającego za kursorem
 - będzie insertował pokój do listy w momencie upuszczenia pokoju
+
+
+ewentualnie zrobic ze corridor to tlyko kwadrat 360x360 ktory jest pokojem, i podczas budowania
+jesli pokoj budowany wejdzie w kolizje z corridor to wtedy mozna go zbudowac
