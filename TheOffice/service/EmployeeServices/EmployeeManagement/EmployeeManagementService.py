@@ -52,7 +52,13 @@ class EmployeeManagementService:
                 emp.remove_from_desk()
             self.move_emp_towards_destination(emp)
             if self.dest_service.emp_arrived_at_destination(emp):
-                self.dest_service.change_destination(emp, self.dest_service.search_destination(emp))
+                destination = self.dest_service.search_destination(emp)
+                if destination is None:
+                    self.collision_service.update_action_object_status(emp.destination)
+                    self.collision_service.adjust_emp_to_action_object(emp, emp.destination, emp.destination.room,
+                                                     emp.destination.room.action_objects.index(emp.destination))
+                    emp.set_desk(emp.destination)
+                self.dest_service.change_destination(emp, destination)
 
     def create_employee(self, x, y, name, company):
         emp = Employee(x, y, name, company)

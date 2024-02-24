@@ -22,7 +22,7 @@ class Needs:
 
     def meet(self):
         if self.motivation <= 100 - self._abilities.boredom:
-            self.motivation += self._abilities.boredom
+            self.motivation += self._abilities.boredom * 3
 
     def decrease_motivation(self):
         self.motivation -= self._abilities.boredom

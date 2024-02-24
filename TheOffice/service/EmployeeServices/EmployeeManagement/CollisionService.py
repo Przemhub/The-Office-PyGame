@@ -48,7 +48,7 @@ class CollisionService:
 
     def handle_emp_desk_collide(self, emp : Employee):
         for floor_i in range(0, len(self.room_board)):
-            room_list = list(self.room_board[floor_i].values())
+            room_list = list(self.room_board[floor_i])
             for room_i in range(0, len(self.room_board[floor_i])):
                 for desk_i in range(0, len(room_list[room_i].action_objects)):
                     if emp.rect.colliderect(room_list[room_i].action_objects[desk_i].rect):
