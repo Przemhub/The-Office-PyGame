@@ -1,4 +1,4 @@
-from pygame import sprite, image, mask
+from pygame import image, mask
 from pygame.rect import Rect
 
 from model.DiningRoom.DiningChair import DiningChair
@@ -7,13 +7,12 @@ from model.Room import Room
 
 class DiningRoom(Room):
     def __init__(self, board_pos, room_board):
-        Room.__init__(self, board_pos, room_board)
+        super().__init__(board_pos, room_board)
         self.init_sprite()
         self.init_tables()
 
     def init_sprite(self):
         self.image = image.load("../resources/rooms/dining_room.png")
-        self.mask = mask.from_surface(self.image)
         (x, y) = self.get_base_coordinates()
         self.rect = Rect(x, y - self.floor * self.image.get_height(), self.image.get_width(),
                          self.image.get_height())

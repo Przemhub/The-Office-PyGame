@@ -1,4 +1,4 @@
-from pygame import Rect, mask, image
+from pygame import Rect, image
 
 from model.ConferenceRoom.ConferenceChair import ConferenceChair
 from model.Room import Room
@@ -6,7 +6,7 @@ from model.Room import Room
 
 class ConferenceRoom(Room):
     def __init__(self, board_pos, room_board):
-        Room.__init__(self, board_pos, room_board)
+        super().__init__(board_pos, room_board)
         self.init_sprite()
         self.init_tables()
 

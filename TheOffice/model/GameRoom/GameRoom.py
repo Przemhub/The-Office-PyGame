@@ -6,7 +6,7 @@ from model.Room import Room
 
 class GameRoom(Room):
     def __init__(self, board_pos, room_board):
-        Room.__init__(self, board_pos, room_board)
+        super().__init__(board_pos, room_board)
         self.init_sprite()
         self.init_spots()
 

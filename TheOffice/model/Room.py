@@ -22,7 +22,7 @@ class Room(sprite.Sprite):
         x = 0
         y = 230
         # make x and y indifferent to the position of camera
-        if len(self.neighbour_rooms) is not 0:
+        if len(self.neighbour_rooms) > 0:
             x = self.get_first_room().rect.x
             y = self.get_first_room().rect.y
         x += self.place_index * self.room_size[0]
