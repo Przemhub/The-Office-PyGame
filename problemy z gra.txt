@@ -15,3 +15,13 @@ no i potrzebny jest indeks z listy ktory:
 
 ewentualnie zrobic ze corridor to tlyko kwadrat 360x360 ktory jest pokojem, i podczas budowania
 jesli pokoj budowany wejdzie w kolizje z corridor to wtedy mozna go zbudowac
+
+więc chce przekazac Roomowi board_pos i room_board
+
+CursorObject który posiadałby:
+
+- self.image # na początku ma to być null i wtedy w draw jeśli image is null to nie rysuj nic
+- self.rect # na początku będzie 1x1
+- place(self) # jesli self.image null to nie rob nic
+- move(self) # do poruszania się względem kursora
+- 

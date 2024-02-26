@@ -13,11 +13,11 @@ class ConferenceRoom(Room):
     def init_sprite(self):
         self.image = image.load("../resources/rooms/conference_room.png")
         (x, y) = self.get_base_coordinates()
-        self.rect = Rect(x, y - self.floor * self.image.get_height(), self.image.get_width(),
+        self.rect = Rect(x, y, self.image.get_width(),
                          self.image.get_height())
 
     def init_tables(self):
         self.action_objects = [
-            ConferenceChair(self.rect.x + 75,self.rect.y + 290,self),
-            ConferenceChair(self.rect.x + 235, self.rect.y + 290,self)
+            ConferenceChair(self.rect.x + 75, self.rect.y + 290, self),
+            ConferenceChair(self.rect.x + 235, self.rect.y + 290, self)
         ]

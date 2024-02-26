@@ -11,7 +11,16 @@ class BuildingService:
         self.corridors = []
 
     def build_floor(self):
-        self.room_board[len(self.room_board)] = []
+        self.room_board.append([])
+        floor = len(self.room_board) - 1
+        self.build_corridor((0, floor))
+        self.build_corridor((1, floor))
+        self.build_corridor((2, floor))
+        self.build_corridor((3, floor))
+        self.build_corridor((4, floor))
+        self.build_corridor((5, floor))
+        self.build_corridor((6, floor))
+        self.build_corridor((7, floor))
 
     # board_pos(x,y)
     # board_pos[x] - order of the room in a row

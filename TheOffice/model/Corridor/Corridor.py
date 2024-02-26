@@ -11,5 +11,5 @@ class Corridor(Room):
     def init_sprite(self):
         self.image = image.load("../resources/rooms/corridor.png")
         (x, y) = self.get_base_coordinates()
-        self.rect = Rect(x, y - self.floor * self.image.get_height(), self.image.get_width(),
+        self.rect = Rect(x, y, self.image.get_width(),
                          self.image.get_height())
