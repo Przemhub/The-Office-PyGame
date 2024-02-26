@@ -25,12 +25,13 @@ class Room(sprite.Sprite):
         if len(self.room_board[self.floor]) > 0:
             x = self.get_first_room().rect.x
             y = self.get_first_room().rect.y
+        x += self.place_index * self.room_size[0]
 
-        # if we are building a new floor, then we want to align y with the previous floor room
+        # if we are building a new floor, then we want to align coordinates with the previous floor room
         if self.floor > 0:
             y = self.room_board[self.floor - 1][self.place_index].rect.y - self.room_size[1]
+            x = self.room_board[self.floor - 1][self.place_index].rect.x
 
-        x += self.place_index * self.room_size[0]
         return x, y
 
     def get_first_room(self):
