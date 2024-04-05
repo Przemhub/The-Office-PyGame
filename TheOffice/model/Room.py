@@ -31,7 +31,6 @@ class Room(sprite.Sprite):
         if self.floor > 0:
             y = self.room_board[self.floor - 1][self.place_index].rect.y - self.room_size[1]
             x = self.room_board[self.floor - 1][self.place_index].rect.x
-
         return x, y
 
     def get_first_room(self):

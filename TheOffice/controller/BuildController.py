@@ -17,6 +17,8 @@ class BuildingController:
             self.building_service.build_conference_room(board_pos)
         elif room_type == RoomType.CORRIDOR:
             self.building_service.build_corridor(board_pos)
+        elif room_type == RoomType.ELEVATOR:
+            self.building_service.build_elevator_room(board_pos)
 
     def build_floor(self):
         self.building_service.build_floor()

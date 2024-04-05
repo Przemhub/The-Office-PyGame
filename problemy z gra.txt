@@ -1,27 +1,35 @@
-jak umożliwić dodawanie pokoju tak aby 
+jak employee moze poruszac sie po piętrach?
 
-otóż pozycja myszki
+1. employee ma własne coord (piętro, pokój)
+2. employee znajduje pokój
+3. sprawdza czy jest na piętrze, jeśli nie wtedy zapisuje sobie drugie destination: winda
+4. jak dojdzie do windy to teleportuje sie na piętro w ktorym jest pokój
 
-zrobic konkretne prostokątne przestrzenie na ktorych mozna dodawac pokoje
-
-dining_room ma być długości tych dwóch prostokątów
-
-na kazdym piętrze powinna być lista pokoi ktora odpowiada pozycji pokoi 
-
-no i potrzebny jest indeks z listy ktory:
-- będzie mnożnikiem pozycji pokoju podążającego za kursorem
-- będzie insertował pokój do listy w momencie upuszczenia pokoju
+albo
 
 
-ewentualnie zrobic ze corridor to tlyko kwadrat 360x360 ktory jest pokojem, i podczas budowania
-jesli pokoj budowany wejdzie w kolizje z corridor to wtedy mozna go zbudowac
+1. employee ma własne coord (piętro, pokój)
+2. employee znajduje pokój
+3. sprawdza czy jest na piętrze, jeśli nie wtedy nadpisuje destination jako winda ale zapisuje numer piętra w którym jest dest pokoju
+4. jak dojdzie do windy to teleportuje sie na piętro w ktorym jest pokój 
+5. employee ponownie szuka pokój, tym razem znajduje ten, który jest na piętrze
 
-więc chce przekazac Roomowi board_pos i room_board
 
-CursorObject który posiadałby:
+PROBLEM: coord w employee nie można zainicjalizować tak żeby piętro zgadzało się z piętrem w którym jest employee
 
-- self.image # na początku ma to być null i wtedy w draw jeśli image is null to nie rysuj nic
-- self.rect # na początku będzie 1x1
-- place(self) # jesli self.image null to nie rob nic
-- move(self) # do poruszania się względem kursora
-- 
+ROZWIĄZANIA:
+zawsze zatrudniać employee na piętrze 0, wtedy coord zawsze będzie (0,0)
+
+PROBLEM: coord jest stały a employee przemieszcza się z miejsca do miejsca:
+
+HIPOTEZY:
+coord jest potrzebny tylko w przypadku gdy employee szuka pokoju,
+employee tylko szuka pokoju wtedy gdy wstaje z krzesla,
+employee generalnie nei rusza sie z miejsca dopoki nie otrzyma triggera zapotrzebowania
+
+ROZWIĄZANIE:
+zapisywać w emp.coord każde miejsce destyynacji
+
+PROBLEM: algorytm wyszukiwania nie wyszukuje najblizszego piętra
+
+ROZWIĄZANIE: pętle for na while zamienić i warunkiem wyjścia będzie 

@@ -54,7 +54,6 @@ class Game:
             (255, 255, 255))
 
     def draw(self):
-
         for floor in range(0, len(self.building_controller.get_room_board())):
             for room in self.building_controller.get_room_board()[floor]:
                 self.screen.blit(room.image, room.rect)
@@ -85,11 +84,11 @@ class Game:
         self.building_controller.build_room((0,0), RoomType.CORRIDOR)
         self.building_controller.build_room((1,0), RoomType.DINING_ROOM)
         self.building_controller.build_room((2,0), RoomType.OFFICE_ROOM)
-        self.building_controller.build_room((3,0), RoomType.CORRIDOR)
-        self.building_controller.build_room((4,0), RoomType.GAME_ROOM)
+        self.building_controller.build_room((3,0), RoomType.ELEVATOR)
+        self.building_controller.build_room((4,0), RoomType.CORRIDOR)
         self.building_controller.build_room((5,0), RoomType.CONFERENCE_ROOM)
         self.building_controller.build_room((6,0), RoomType.CORRIDOR)
-        self.building_controller.build_room((7,0), RoomType.CORRIDOR)
+
 
         # self.employee_controller.create_employee(120, 280, "Bob2", self._company)
         self.employee_controller.employee_service.employee_list[0]._needs.hunger = 20

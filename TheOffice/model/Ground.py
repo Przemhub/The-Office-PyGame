@@ -9,10 +9,10 @@ class Ground:
         self.y = screen.get_height() * 6 / 7
 
     def is_touching(self, emp: Employee):
-        return emp.rect.y >= self.y
+        return emp.rect.y >= self.y - (360 * emp.floor)
 
     def is_touching_adjusted(self, emp: Employee):
-        return emp.rect.y + 30 >= self.y
+        return emp.rect.y + 30 >= self.y - (360 * emp.floor)
 
     def move(self, y):
         self.y += y
