@@ -1,6 +1,7 @@
 from model.ConferenceRoom.ConferenceRoom import ConferenceRoom
 from model.Corridor.Corridor import Corridor
 from model.DiningRoom.DiningRoom import DiningRoom
+from model.ElevatorRoom.ElevatorRoom import ElevatorRoom
 from model.GameRoom.GameRoom import GameRoom
 from model.OfficeRoom.OfficeRoom import OfficeRoom
 
@@ -11,7 +12,15 @@ class BuildingService:
         self.corridors = []
 
     def build_floor(self):
-        self.room_board[len(self.room_board)] = []
+        self.room_board.append([])
+        floor = len(self.room_board) - 1
+        self.build_corridor((0, floor))
+        self.build_corridor((1, floor))
+        self.build_corridor((2, floor))
+        self.build_elevator_room((3, floor))
+        self.build_corridor((4, floor))
+        self.build_corridor((5, floor))
+        self.build_corridor((6, floor))
 
     # board_pos(x,y)
     # board_pos[x] - order of the room in a row
@@ -67,3 +76,12 @@ class BuildingService:
             raise Exception(board_pos[1], "exceeded the actual number of floors to build on:", len(self.room_board))
         elif board_pos[0] > len(self.room_board[board_pos[1]]):
             raise Exception(board_pos[0], "exceeded the actual number of rooms to build:", len(self.room_board[board_pos[1]]))
+
+    def build_elevator_room(self, board_pos):
+        self.validate_board_pos(board_pos)
+        if board_pos[0] == len(self.room_board[board_pos[1]]):
+            elevator = ElevatorRoom(board_pos, self.room_board)
+            self.room_board[board_pos[1]].append(elevator)
+        else:
+            elevator = ElevatorRoom(board_pos, self.room_board)
+            self.room_board[board_pos[1]][board_pos[0]] = elevator

@@ -8,6 +8,7 @@ class KeyboardController:
     def __init__(self, employee_controller, mouse_controller: MouseController, company):
         self.employee_controller = employee_controller
         self.cursor = mouse_controller.cursor
+        self.building_controller = mouse_controller.building_controller
         self._company = company
 
     def execute_event(self, e):
@@ -21,3 +22,5 @@ class KeyboardController:
                 self.cursor.set_cursor_object(RoomType.DINING_ROOM)
             elif e.key is pygame.K_3:
                 self.cursor.set_cursor_object(RoomType.GAME_ROOM)
+            elif e.key is pygame.K_f:
+                self.building_controller.build_floor()

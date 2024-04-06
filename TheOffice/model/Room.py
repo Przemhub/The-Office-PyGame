@@ -7,7 +7,7 @@ class Room(sprite.Sprite):
         # Where the room needs to be placed
         self.place_index = board_pos[0]
         self.floor = board_pos[1]
-        self.neighbour_rooms = room_board[self.floor]
+        self.room_board = room_board
         self.action_objects = []
         #               (width, height)
         self.room_size = (360, 360)
@@ -22,11 +22,16 @@ class Room(sprite.Sprite):
         x = 0
         y = 230
         # make x and y indifferent to the position of camera
-        if len(self.neighbour_rooms) > 0:
+        if len(self.room_board[self.floor]) > 0:
             x = self.get_first_room().rect.x
             y = self.get_first_room().rect.y
         x += self.place_index * self.room_size[0]
+
+        # if we are building a new floor, then we want to align coordinates with the previous floor room
+        if self.floor > 0:
+            y = self.room_board[self.floor - 1][self.place_index].rect.y - self.room_size[1]
+            x = self.room_board[self.floor - 1][self.place_index].rect.x
         return x, y
 
     def get_first_room(self):
-        return self.neighbour_rooms[0]
+        return self.room_board[self.floor][0]

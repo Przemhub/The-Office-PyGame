@@ -4,3 +4,4 @@ class RoomType:
     GAME_ROOM = 2
     CONFERENCE_ROOM = 3
     CORRIDOR = 4
+    ELEVATOR = 5

@@ -94,6 +94,8 @@ class Employee(sprite.Sprite):
         self._abilities = Abilities()
         self.direction = ''
         self.destination = None
+        self.destination_mem = None
+        self.coord = (0, 0)  # x - room, y - floor
 
     def make_sale(self):
         sale = self._calculator.calculate_sale()
@@ -111,6 +113,9 @@ class Employee(sprite.Sprite):
 
     def update_company(self, papers):
         self.company_observer.update_papers(papers)
+
+    def clear_destination_mem(self):
+        self.destination_mem = None
 
     def is_idle(self):
         return self.destination is None and not (self.is_working() or self.is_eating() or self.is_playing() or self.has_meeting())
@@ -172,6 +177,7 @@ class Employee(sprite.Sprite):
         if self.shake_i > 2:
             self.shake_i = 0
         self.image = self.shake_images[self.shake_i]
+
     def change_falling_sprite(self):
         self.image = self.falling_image
 

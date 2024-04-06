@@ -50,6 +50,8 @@ class CollisionService:
         for floor_i in range(0, len(self.room_board)):
             room_list = list(self.room_board[floor_i])
             for room_i in range(0, len(self.room_board[floor_i])):
+                if emp.rect.colliderect(room_list[room_i].rect):
+                    emp.coord = (room_i, floor_i)
                 for desk_i in range(0, len(room_list[room_i].action_objects)):
                     if emp.rect.colliderect(room_list[room_i].action_objects[desk_i].rect):
                         if self.action_object_taken(room_list, room_i, desk_i) is False:
