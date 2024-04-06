@@ -30,7 +30,7 @@ class EmployeeController:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.employee_service.pick_up_employee(i)
             elif event.type == pygame.MOUSEBUTTONUP:
-                self.employee_service.put_down_employee()
+                self.employee_service.put_down_employee(i)
 
     def drag_employee(self):
         self.employee_service.drag_emp_if_selected()

@@ -33,3 +33,16 @@ zapisywać w emp.coord każde miejsce destyynacji
 PROBLEM: algorytm wyszukiwania nie wyszukuje najblizszego piętra
 
 ROZWIĄZANIE: pętle for na while zamienić i warunkiem wyjścia będzie 
+
+emp.coord jest 0,0 bo kazdy employee zaczyna z lewego dolnego rogu
+
+emp.coord wczytywany jest gdy:
+- emp szuka pokoju
+- emp jest upuszczany
+
+emp.coord zapisywany jest gdy:
+- emp jest w destynacji ktora nie jest windą
+- emp jest upuszczany - 
+	! jest problem z ogarnięciem na ktorym pokoju jest upuszcany employee
+	NIE do końca problem bo w najgorszym scenariuszu to emp pojdzie do pokoju ktory nie jest najblizej, albo ominie pokoj kompletnie
+
