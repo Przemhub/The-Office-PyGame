@@ -95,7 +95,7 @@ class Employee(sprite.Sprite):
         self.direction = ''
         self.destination = None
         self.destination_mem = None
-        self.floor = 0
+        self.coord = (0, 0)  # x - room, y - floor
 
     def make_sale(self):
         sale = self._calculator.calculate_sale()

@@ -130,6 +130,7 @@ class EmployeeManagementService:
 
     def put_down_employee(self, index):
         if self.employee_list[index].rect.collidepoint(mouse.get_pos()):
+            self.employee_list[self.dragged_emp_i].destination = None
             self.collision_service.handle_emp_desk_collide(self.employee_list[self.dragged_emp_i])
         self.dragged_emp_i = -1
 

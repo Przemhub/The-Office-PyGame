@@ -11,40 +11,50 @@ class DestinationSearchService:
 
     def search_for_room(self, emp, dest_room: str):
         # available room searching algorithm
-        for floor_i in range(0, len(self.room_board)):
-            room_list = list(self.room_board[floor_i])
+        self.search_floors(emp, dest_room)
 
-            for room_i in range(0, len(self.room_board[floor_i])):
-                room_dist = 1
-                # found the room the employee is in
-                if emp.rect.colliderect(room_list[room_i].rect):
-                    emp.floor = floor_i
-                # look for the closest destination room from employee
-                while True:
-                    # if we have not yet exceeded the number of rooms in list, look for rooms on right
-                    if room_i + room_dist < len(room_list):
-                        if type(room_list[room_i + room_dist]).__name__ == dest_room and room_list[room_i + room_dist].is_free():
-                            if self.is_on_different_floor(emp, floor_i):
-                                emp.destination_mem = room_list[room_i + room_dist]
-                                emp.destination = self.room_board[emp.floor][self.ELEVATOR_POSITION]
-                            else:
-                                emp.destination = room_list[room_i + room_dist]
-                            return
-                    # look for rooms on left
-                    if room_i - room_dist >= 0:
-                        if type(room_list[room_i - room_dist]).__name__ == dest_room and room_list[room_i - room_dist].is_free():
-                            if self.is_on_different_floor(emp, floor_i):
-                                emp.destination_mem = room_list[room_i - room_dist]
-                                emp.destination = self.room_board[emp.floor][self.ELEVATOR_POSITION]
-                            else:
-                                emp.destination = room_list[room_i - room_dist]
-                            return
-                    if room_i + room_dist >= len(room_list) and room_i - room_dist < 0:
-                        break
-                    room_dist += 1
+        # look for the closest destination room from employee
+
+    def search_floors(self, emp, dest_room):
+        floor_dist = 0
+        while True:
+            if emp.coord[1] + floor_dist < len(self.room_board):
+                if self.search_rooms(emp, list(self.room_board[emp.coord[1] + floor_dist]), dest_room) is not None:
+                    return
+            # look for rooms on left
+            if emp.coord[1] - floor_dist >= 0:
+                if self.search_rooms(emp, list(self.room_board[emp.coord[1] - floor_dist]), dest_room) is not None:
+                    return
+            if emp.coord[1] + floor_dist >= len(self.room_board) and emp.coord[1] - floor_dist < 0:
+                return
+            floor_dist += 1
+    def search_rooms(self, emp, room_list, dest_room):
+        room_dist = 1
+        while True:
+            # if we have not yet exceeded the number of rooms in list, look for rooms on right
+            if emp.coord[0] + room_dist < len(room_list):
+                if type(room_list[emp.coord[0] + room_dist]).__name__ == dest_room and room_list[emp.coord[0] + room_dist].is_free():
+                    if self.is_on_different_floor(emp, room_list[emp.coord[0] + room_dist].floor):
+                        emp.destination_mem = room_list[emp.coord[0] + room_dist]
+                        emp.destination = self.room_board[emp.coord[1]][self.ELEVATOR_POSITION]
+                    else:
+                        emp.destination = room_list[emp.coord[0] + room_dist]
+                    return emp.destination
+            # look for rooms on left
+            if emp.coord[0] - room_dist >= 0:
+                if type(room_list[emp.coord[0] - room_dist]).__name__ == dest_room and room_list[emp.coord[0] - room_dist].is_free():
+                    if self.is_on_different_floor(emp, room_list[emp.coord[0] - room_dist].floor):
+                        emp.destination_mem = room_list[emp.coord[0] - room_dist]
+                        emp.destination = self.room_board[emp.coord[1]][self.ELEVATOR_POSITION]
+                    else:
+                        emp.destination = room_list[emp.coord[0] - room_dist]
+                    return emp.destination
+            if emp.coord[0] + room_dist >= len(room_list) and emp.coord[0] - room_dist < 0:
+                return None
+            room_dist += 1
 
     def is_on_different_floor(self, emp, floor_i):
-        return emp.floor != floor_i
+        return emp.coord[1] != floor_i
 
     def search_for_spot(self, emp: Employee):
         # looking for a spot
@@ -57,15 +67,18 @@ class DestinationSearchService:
             emp.rect = emp.rect.move(5, 0)
             if type(emp.destination).__name__ == "OfficeDesk":
                 self.task_service_t.insert_emp(emp, "work")
+                emp.coord = (emp.destination.room.place_index, emp.destination.room.floor)
             elif type(emp.destination).__name__ == "DiningChair":
                 self.task_service_t.insert_emp(emp, "hunger")
+                emp.coord = (emp.destination.room.place_index, emp.destination.room.floor)
             elif type(emp.destination).__name__ == "GameSpot":
                 self.task_service_t.insert_emp(emp, "stress")
+                emp.coord = (emp.destination.room.place_index, emp.destination.room.floor)
             elif type(emp.destination).__name__ == "Elevator":
                 self.teleport_to_floor(emp, emp.destination_mem)
                 self.change_destination(emp, emp.destination_mem)
                 emp.clear_destination_mem()
-                emp.floor = emp.destination.floor
+                emp.coord = (emp.coord[0], emp.destination.floor)
                 emp.destination = self.search_for_spot(emp)
                 return emp.destination
             return None
