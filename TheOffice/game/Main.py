@@ -54,7 +54,7 @@ class Game:
         self.motivation = self.font.render(
             "Motivation: " + str(self.employee_controller.employee_service.employee_list[0]._needs.motivation), True,
             (255, 255, 255))
-        self.clock_time = self.font.render("Progress: " + self.ingame_clock.get_progress_str(), True, (255, 255, 255))
+        self.clock_time = self.font.render("Time: " + self.ingame_clock.get_progress_str(), True, (255, 255, 255))
 
 
     def draw(self):
@@ -68,12 +68,13 @@ class Game:
         for emp in self.employee_controller.employee_service.employee_list:
             self.screen.blit(emp.image, emp.rect)
 
-        self.screen.blit(self.paper_sold, pygame.Rect(300, 100, 1, 1))
-        self.screen.blit(self.money, pygame.Rect(300, 125, 1, 1))
-        self.screen.blit(self.hunger, pygame.Rect(300, 225, 1, 1))
-        self.screen.blit(self.stress, pygame.Rect(300, 200, 1, 1))
-        self.screen.blit(self.motivation, pygame.Rect(300, 250, 1, 1))
-        self.screen.blit(self.clock_time, pygame.Rect(300, 280, 1, 1))
+        self.screen.blit(self.paper_sold, self.text_rect)
+        self.screen.blit(self.money, self.text_rect.move(0, 25))
+        self.screen.blit(self.clock_time, self.text_rect.move(0, 50))
+        self.screen.blit(self.hunger, self.text_rect.move(0, 125))
+        self.screen.blit(self.stress, self.text_rect.move(0, 100))
+        self.screen.blit(self.motivation, self.text_rect.move(0, 150))
+
 
     def init_objects(self):
         self.ground = Ground(self.screen)
@@ -103,7 +104,8 @@ class Game:
         self.font = pygame.font.SysFont("Calibri", 24, True)
         self.paper_sold = self.font.render("Paper sold: ", True, (255, 255, 255))
         self.money = self.font.render("Money: ", True, (255, 255, 255))
-        self.clock_time = self.font.render("Progress: ", True, (255, 255, 255))
+        self.clock_time = self.font.render("Time: ", True, (255, 255, 255))
+        self.text_rect = pygame.Rect(300, 100, 1, 1)
 
     def init_screen(self):
         pygame.display.init()
