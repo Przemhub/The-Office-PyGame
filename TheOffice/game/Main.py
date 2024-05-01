@@ -4,8 +4,9 @@ from controller.BuildController import BuildingController
 from controller.EmployeeController import EmployeeController
 from controller.KeyboardController import KeyboardController
 from controller.MouseController import MouseController
-from model.Company import CompanyData
+from model.Company import Company
 from model.Ground import Ground
+from model.Time.Clock import Clock
 from service.RoomType import RoomType
 
 
@@ -33,6 +34,7 @@ class Game:
             self.mouse_controller.scroll_view()
             self.mouse_controller.move_cursor()
             self.employee_controller.move_employees()
+            self.ingame_clock.tick()
             self.draw()
             self.clock.tick(30)
             pygame.display.flip()
@@ -52,6 +54,8 @@ class Game:
         self.motivation = self.font.render(
             "Motivation: " + str(self.employee_controller.employee_service.employee_list[0]._needs.motivation), True,
             (255, 255, 255))
+        self.clock_time = self.font.render("Progress: " + self.ingame_clock.get_progress_str(), True, (255, 255, 255))
+
 
     def draw(self):
         for floor in range(0, len(self.building_controller.get_room_board())):
@@ -69,11 +73,12 @@ class Game:
         self.screen.blit(self.hunger, pygame.Rect(300, 225, 1, 1))
         self.screen.blit(self.stress, pygame.Rect(300, 200, 1, 1))
         self.screen.blit(self.motivation, pygame.Rect(300, 250, 1, 1))
+        self.screen.blit(self.clock_time, pygame.Rect(300, 280, 1, 1))
 
     def init_objects(self):
         self.ground = Ground(self.screen)
-        self._company = CompanyData()
-
+        self._company = Company()
+        self.ingame_clock = Clock()
         self.building_controller = BuildingController()
         self.employee_controller = EmployeeController(self.building_controller.get_room_board(), self.ground)
         self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
@@ -98,6 +103,7 @@ class Game:
         self.font = pygame.font.SysFont("Calibri", 24, True)
         self.paper_sold = self.font.render("Paper sold: ", True, (255, 255, 255))
         self.money = self.font.render("Money: ", True, (255, 255, 255))
+        self.clock_time = self.font.render("Progress: ", True, (255, 255, 255))
 
     def init_screen(self):
         pygame.display.init()

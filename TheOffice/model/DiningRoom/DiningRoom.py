@@ -1,4 +1,4 @@
-from pygame import image, mask
+from pygame import image
 from pygame.rect import Rect
 
 from model.DiningRoom.DiningChair import DiningChair
