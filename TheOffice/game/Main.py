@@ -6,8 +6,10 @@ from controller.KeyboardController import KeyboardController
 from controller.MouseController import MouseController
 from model.Company import Company
 from model.Ground import Ground
+from model.Time.Calendar import Calendar
 from model.Time.Clock import Clock
 from service.RoomType import RoomType
+from service.Time.TimeService import TimeService
 
 
 class Game:
@@ -34,7 +36,7 @@ class Game:
             self.mouse_controller.scroll_view()
             self.mouse_controller.move_cursor()
             self.employee_controller.move_employees()
-            self.ingame_clock.tick()
+            self.time_service.update_time()
             self.draw()
             self.clock.tick(30)
             pygame.display.flip()
@@ -54,7 +56,7 @@ class Game:
         self.motivation = self.font.render(
             "Motivation: " + str(self.employee_controller.employee_service.employee_list[0]._needs.motivation), True,
             (255, 255, 255))
-        self.clock_time = self.font.render("Time: " + self.ingame_clock.get_progress_str(), True, (255, 255, 255))
+        self.clock_time = self.font.render("Time: " + self.time_service.get_progress_str(), True, (255, 255, 255))
 
 
     def draw(self):
@@ -79,7 +81,8 @@ class Game:
     def init_objects(self):
         self.ground = Ground(self.screen)
         self._company = Company()
-        self.ingame_clock = Clock()
+        self.calendar = Calendar()
+        self.time_service = TimeService()
         self.building_controller = BuildingController()
         self.employee_controller = EmployeeController(self.building_controller.get_room_board(), self.ground)
         self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
