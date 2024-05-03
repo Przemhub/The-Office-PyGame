@@ -6,8 +6,8 @@ from controller.KeyboardController import KeyboardController
 from controller.MouseController import MouseController
 from model.Company import Company
 from model.Ground import Ground
+from model.Interface.Toolbar import Toolbar
 from model.Time.Calendar import Calendar
-from model.Time.Clock import Clock
 from service.RoomType import RoomType
 from service.Time.TimeService import TimeService
 
@@ -70,16 +70,19 @@ class Game:
         for emp in self.employee_controller.employee_service.employee_list:
             self.screen.blit(emp.image, emp.rect)
 
-        self.screen.blit(self.paper_sold, self.text_rect)
-        self.screen.blit(self.money, self.text_rect.move(0, 25))
-        self.screen.blit(self.clock_time, self.text_rect.move(0, 50))
-        self.screen.blit(self.hunger, self.text_rect.move(0, 125))
-        self.screen.blit(self.stress, self.text_rect.move(0, 100))
-        self.screen.blit(self.motivation, self.text_rect.move(0, 150))
+        self.screen.blit(self.toolbar.image, self.toolbar.rect)
+        self.screen.blit(self.paper_sold, self.text_rect.move(40,25))
+        self.screen.blit(self.money, self.text_rect.move(200, 25))
+        self.screen.blit(self.clock_time, self.text_rect.move(500, 25))
+        # self.screen.blit(self.hunger, self.text_rect.move(0, 125))
+        # self.screen.blit(self.stress, self.text_rect.move(0, 100))
+        # self.screen.blit(self.motivation, self.text_rect.move(0, 150))
+
 
 
     def init_objects(self):
         self.ground = Ground(self.screen)
+        self.toolbar = Toolbar()
         self._company = Company()
         self.calendar = Calendar()
         self.time_service = TimeService()
@@ -108,7 +111,7 @@ class Game:
         self.paper_sold = self.font.render("Paper sold: ", True, (255, 255, 255))
         self.money = self.font.render("Money: ", True, (255, 255, 255))
         self.clock_time = self.font.render("Time: ", True, (255, 255, 255))
-        self.text_rect = pygame.Rect(300, 100, 1, 1)
+        self.text_rect = pygame.Rect(0, 0, 1, 1)
 
     def init_screen(self):
         pygame.display.init()
