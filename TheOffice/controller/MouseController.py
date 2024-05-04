@@ -61,4 +61,4 @@ class MouseController:
             if self.cursor.drags_room():
                 self.place_building()
             elif self.cursor.rect.colliderect(self.interface_service.toolbar.calendar_rect):
-                self.interface_service.pull_down_wing(self.interface_service.LEFT_WING)
+                self.interface_service.pull_push_wing(self.interface_service.LEFT_WING)
