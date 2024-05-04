@@ -23,10 +23,8 @@ class MouseController:
         elif pygame.mouse.get_pos()[0] <= self.threshold:
             self.move_objects(self.speed, 0)
         elif pygame.mouse.get_pos()[1] <= self.threshold:
-            self.ground.move(self.speed)
             self.move_objects(0, self.speed)
         elif pygame.mouse.get_pos()[1] >= self.screen.get_height() - self.threshold:
-            self.ground.move(-self.speed)
             self.move_objects(0, -self.speed)
 
     def move_cursor(self):
@@ -53,6 +51,7 @@ class MouseController:
                     a_obj.rect = a_obj.rect.move(x, y)
         for corridor in self.corridors:
             corridor.rect = corridor.rect.move(x, y)
+        self.ground.move(y)
 
     def execute_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and self.cursor.is_active():

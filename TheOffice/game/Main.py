@@ -33,7 +33,8 @@ class Game:
             self.screen.fill((155, 232, 255))
             self.employee_controller.drag_employee()
             self.update_text()
-            self.mouse_controller.scroll_view()
+            # self.mouse_controller.scroll_view()
+            self.keyboard_controller.scroll_view()
             self.mouse_controller.move_cursor()
             self.employee_controller.move_employees()
             self.time_service.update_time()
@@ -71,9 +72,9 @@ class Game:
             self.screen.blit(emp.image, emp.rect)
 
         self.screen.blit(self.toolbar.image, self.toolbar.rect)
+        pygame.draw.line(self.screen, (0,0,0),(397,55),self.toolbar.clk_pointer, 5)
         self.screen.blit(self.paper_sold, self.text_rect.move(40,25))
         self.screen.blit(self.money, self.text_rect.move(200, 25))
-        self.screen.blit(self.clock_time, self.text_rect.move(500, 25))
         # self.screen.blit(self.hunger, self.text_rect.move(0, 125))
         # self.screen.blit(self.stress, self.text_rect.move(0, 100))
         # self.screen.blit(self.motivation, self.text_rect.move(0, 150))
@@ -85,7 +86,7 @@ class Game:
         self.toolbar = Toolbar()
         self._company = Company()
         self.calendar = Calendar()
-        self.time_service = TimeService()
+        self.time_service = TimeService(self.toolbar)
         self.building_controller = BuildingController()
         self.employee_controller = EmployeeController(self.building_controller.get_room_board(), self.ground)
         self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
@@ -110,7 +111,6 @@ class Game:
         self.font = pygame.font.SysFont("Calibri", 24, True)
         self.paper_sold = self.font.render("Paper sold: ", True, (255, 255, 255))
         self.money = self.font.render("Money: ", True, (255, 255, 255))
-        self.clock_time = self.font.render("Time: ", True, (255, 255, 255))
         self.text_rect = pygame.Rect(0, 0, 1, 1)
 
     def init_screen(self):
