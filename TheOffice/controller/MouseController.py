@@ -2,20 +2,22 @@ import pygame
 
 from controller.BuildController import BuildingController
 from model.CursorObject import CursorObject
+from service.InterfaceService import InterfaceService
 
 
 class MouseController:
-    def __init__(self, screen, employee_list, building_controller: BuildingController, ground):
+    def __init__(self, screen, employee_list, building_controller: BuildingController, ground, interface_service: InterfaceService):
         self.screen = screen
         self.emp_list = employee_list
         self.building_controller = building_controller
         self.room_board = building_controller.building_service.room_board
         self.corridors = building_controller.building_service.corridors
+        self.interface_service = interface_service
         self.ground = ground
         self.speed = 15
         self.threshold = 70
         self.cursor = CursorObject()
-        self.board_pos = (-1,-1)
+        self.board_pos = (-1, -1)
 
     def scroll_view(self):
         if pygame.mouse.get_pos()[0] >= self.screen.get_width() - self.threshold:
@@ -29,12 +31,13 @@ class MouseController:
 
     def move_cursor(self):
         self.cursor.relocate(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
-        if self.cursor.is_active():
-            for floor in range (0, len(self.room_board)):
+        # if cursor collides with any slot then stick the room to the slot
+        if self.cursor.drags_room():
+            for floor in range(0, len(self.room_board)):
                 for room in self.room_board[floor]:
                     if self.cursor.collides_with(room.rect):
-                        self.cursor.rect.x = room.rect.x
-                        self.cursor.rect.y = room.rect.y
+                        self.cursor.rect.x = room.rect.x + 150
+                        self.cursor.rect.y = room.rect.y + 150
                         self.board_pos = (self.room_board[floor].index(room), floor)
 
     def place_building(self):
@@ -54,5 +57,8 @@ class MouseController:
         self.ground.move(y)
 
     def execute_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN and self.cursor.is_active():
-            self.place_building()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.cursor.drags_room():
+                self.place_building()
+            elif self.cursor.rect.colliderect(self.interface_service.toolbar.calendar_rect):
+                self.interface_service.pull_down_wing(self.interface_service.LEFT_WING)

@@ -8,6 +8,7 @@ from model.Company import Company
 from model.Ground import Ground
 from model.Interface.Toolbar import Toolbar
 from model.Time.Calendar import Calendar
+from service.InterfaceService import InterfaceService
 from service.RoomType import RoomType
 from service.Time.TimeService import TimeService
 
@@ -38,13 +39,14 @@ class Game:
             self.mouse_controller.move_cursor()
             self.employee_controller.move_employees()
             self.time_service.update_time()
+            self.interface_service.pull_down_animation()
             self.draw()
             self.clock.tick(30)
             pygame.display.flip()
 
     def update_text(self):
         self.paper_sold = self.font.render(
-            "Paper sold: " + str(self.employee_controller.employee_service.employee_list[0]._stats.papers_sold), True,
+            "Paper sold: " + str(self._company.papers_sold), True,
             (255, 255, 255))
         self.money = self.font.render("Money: " + str(self._company.money), True, (255, 255, 255))
         self.hunger = self.font.render(
@@ -66,15 +68,20 @@ class Game:
                 self.screen.blit(room.image, room.rect)
                 # for action_obj in room.action_objects:
                 #     pygame.draw.rect(self.screen,(0,0,0),action_obj.rect)
-        if self.mouse_controller.cursor.is_active():
-            self.screen.blit(self.mouse_controller.cursor.image, self.mouse_controller.cursor.rect)
+        if self.mouse_controller.cursor.drags_room():
+            self.screen.blit(self.mouse_controller.cursor.image, self.mouse_controller.cursor.rect.move(-150,-150))
         for emp in self.employee_controller.employee_service.employee_list:
             self.screen.blit(emp.image, emp.rect)
 
+
+
+        # self.screen.blit(self.paper_sold, self.text_rect.move(40,25))
+        # self.screen.blit(self.money, self.text_rect.move(200, 25))
+        pygame.draw.rect(self.screen,(33,75,175),self.toolbar.left_wing)
+        pygame.draw.rect(self.screen,(33,75,175),self.toolbar.right_wing)
         self.screen.blit(self.toolbar.image, self.toolbar.rect)
-        pygame.draw.line(self.screen, (0,0,0),(397,55),self.toolbar.clk_pointer, 5)
-        self.screen.blit(self.paper_sold, self.text_rect.move(40,25))
-        self.screen.blit(self.money, self.text_rect.move(200, 25))
+        self.screen.blit(self.toolbar.calendar,self.toolbar.calendar_rect)
+        pygame.draw.line(self.screen, (0, 0, 0), (397, 55), self.toolbar.clk_pointer, 5)
         # self.screen.blit(self.hunger, self.text_rect.move(0, 125))
         # self.screen.blit(self.stress, self.text_rect.move(0, 100))
         # self.screen.blit(self.motivation, self.text_rect.move(0, 150))
@@ -87,10 +94,11 @@ class Game:
         self._company = Company()
         self.calendar = Calendar()
         self.time_service = TimeService(self.toolbar)
+        self.interface_service = InterfaceService(self.toolbar)
         self.building_controller = BuildingController()
         self.employee_controller = EmployeeController(self.building_controller.get_room_board(), self.ground)
         self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
-                                                self.building_controller, self.ground)
+                                                self.building_controller, self.ground, self.interface_service)
         self.keyboard_controller = KeyboardController(self.employee_controller, self.mouse_controller, self._company)
 
         self.employee_controller.create_employee(100, 200, self._company)
