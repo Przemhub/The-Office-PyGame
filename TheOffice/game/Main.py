@@ -46,9 +46,9 @@ class Game:
 
     def update_text(self):
         self.paper_sold = self.font.render(
-            "Paper sold: " + str(self._company.papers_sold), True,
+            "Paper sold: " + str(self.company.papers_sold), True,
             (255, 255, 255))
-        self.money = self.font.render("Money: " + str(self._company.money), True, (255, 255, 255))
+        self.money = self.font.render("Money: " + str(self.company.money), True, (255, 255, 255))
         self.hunger = self.font.render(
             "Hunger: " + str(self.employee_controller.employee_service.employee_list[0]._needs.hunger), True,
             (255, 255, 255))
@@ -73,14 +73,14 @@ class Game:
         for emp in self.employee_controller.employee_service.employee_list:
             self.screen.blit(emp.image, emp.rect)
 
-
-
         # self.screen.blit(self.paper_sold, self.text_rect.move(40,25))
         # self.screen.blit(self.money, self.text_rect.move(200, 25))
         pygame.draw.rect(self.screen,(33,75,175),self.toolbar.left_wing)
         pygame.draw.rect(self.screen,(33,75,175),self.toolbar.right_wing)
+        # The interface
+        self.screen.blit(self.calendar.image, self.calendar.rect)
         self.screen.blit(self.toolbar.image, self.toolbar.rect)
-        self.screen.blit(self.toolbar.calendar,self.toolbar.calendar_rect)
+        self.screen.blit(self.toolbar.calendar_icon.image, self.toolbar.calendar_icon.rect)
         pygame.draw.line(self.screen, (0, 0, 0), (397, 55), self.toolbar.clk_pointer, 5)
         # self.screen.blit(self.hunger, self.text_rect.move(0, 125))
         # self.screen.blit(self.stress, self.text_rect.move(0, 100))
@@ -90,18 +90,19 @@ class Game:
 
     def init_objects(self):
         self.ground = Ground(self.screen)
-        self.toolbar = Toolbar()
-        self._company = Company()
         self.calendar = Calendar()
+        self.toolbar = Toolbar(self.calendar)
+        self.company = Company()
         self.time_service = TimeService(self.toolbar)
+
         self.interface_service = InterfaceService(self.toolbar)
         self.building_controller = BuildingController()
         self.employee_controller = EmployeeController(self.building_controller.get_room_board(), self.ground)
         self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
                                                 self.building_controller, self.ground, self.interface_service)
-        self.keyboard_controller = KeyboardController(self.employee_controller, self.mouse_controller, self._company)
+        self.keyboard_controller = KeyboardController(self.employee_controller, self.mouse_controller, self.company)
 
-        self.employee_controller.create_employee(100, 200, self._company)
+        self.employee_controller.create_employee(100, 200, self.company)
         self.building_controller.build_room((0,0), RoomType.CORRIDOR)
         self.building_controller.build_room((1,0), RoomType.DINING_ROOM)
         self.building_controller.build_room((2,0), RoomType.OFFICE_ROOM)
