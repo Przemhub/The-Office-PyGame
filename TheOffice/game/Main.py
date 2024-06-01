@@ -7,10 +7,8 @@ from controller.MouseController import MouseController
 from model.Company import Company
 from model.Ground import Ground
 from model.Interface.Toolbar import Toolbar
-from model.Time.Calendar import Calendar
-from service.InterfaceService import InterfaceService
+from service.Interface.InterfaceService import InterfaceService
 from service.RoomType import RoomType
-from service.Time.TimeService import TimeService
 
 
 class Game:
@@ -38,7 +36,7 @@ class Game:
             self.keyboard_controller.scroll_view()
             self.mouse_controller.move_cursor()
             self.employee_controller.move_employees()
-            self.time_service.update_time()
+            self.interface_service.update_time()
             self.interface_service.pull_down_animation()
             self.draw()
             self.clock.tick(30)
@@ -59,8 +57,7 @@ class Game:
         self.motivation = self.font.render(
             "Motivation: " + str(self.employee_controller.employee_service.employee_list[0]._needs.motivation), True,
             (255, 255, 255))
-        self.clock_time = self.font.render("Time: " + self.time_service.get_progress_str(), True, (255, 255, 255))
-
+        self.clock_time = self.font.render("Time: " + self.interface_service.get_clock_progress_str(), True, (255, 255, 255))
 
     def draw(self):
         for floor in range(0, len(self.building_controller.get_room_board())):
@@ -69,33 +66,32 @@ class Game:
                 # for action_obj in room.action_objects:
                 #     pygame.draw.rect(self.screen,(0,0,0),action_obj.rect)
         if self.mouse_controller.cursor.drags_room():
-            self.screen.blit(self.mouse_controller.cursor.image, self.mouse_controller.cursor.rect.move(-150,-150))
+            self.screen.blit(self.mouse_controller.cursor.image, self.mouse_controller.cursor.rect.move(-150, -150))
         for emp in self.employee_controller.employee_service.employee_list:
             self.screen.blit(emp.image, emp.rect)
 
         # self.screen.blit(self.paper_sold, self.text_rect.move(40,25))
         # self.screen.blit(self.money, self.text_rect.move(200, 25))
-        pygame.draw.rect(self.screen,(33,75,175),self.toolbar.left_wing)
-        pygame.draw.rect(self.screen,(33,75,175),self.toolbar.right_wing)
+        pygame.draw.rect(self.screen, (33, 75, 175), self.interface_service.toolbar.left_wing)
+        pygame.draw.rect(self.screen, (33, 75, 175), self.interface_service.toolbar.right_wing)
+
         # The interface
-        self.screen.blit(self.calendar.image, self.calendar.rect)
-        self.screen.blit(self.toolbar.image, self.toolbar.rect)
-        self.screen.blit(self.toolbar.calendar_icon.image, self.toolbar.calendar_icon.rect)
-        pygame.draw.line(self.screen, (0, 0, 0), (397, 55), self.toolbar.clk_pointer, 5)
+        self.screen.blit(self.interface_service.calendar.image, self.interface_service.calendar.rect)
+        self.screen.blit(self.interface_service.calendar.page_images[self.interface_service.calendar.current_page], self.interface_service.calendar.page_rect)
+        pygame.draw.rect(self.screen, (255,0,0), self.interface_service.calendar.page_marker_rect,3)
+        self.screen.blit(self.interface_service.toolbar.image, self.interface_service.toolbar.rect)
+        self.screen.blit(self.interface_service.toolbar.calendar_icon.image, self.interface_service.toolbar.calendar_icon.rect)
+
+        pygame.draw.line(self.screen, (0, 0, 0), (397, 55), self.interface_service.toolbar.clk_pointer, 5)
         # self.screen.blit(self.hunger, self.text_rect.move(0, 125))
         # self.screen.blit(self.stress, self.text_rect.move(0, 100))
         # self.screen.blit(self.motivation, self.text_rect.move(0, 150))
 
-
-
     def init_objects(self):
         self.ground = Ground(self.screen)
-        self.calendar = Calendar()
-        self.toolbar = Toolbar(self.calendar)
         self.company = Company()
-        self.time_service = TimeService(self.toolbar)
 
-        self.interface_service = InterfaceService(self.toolbar)
+        self.interface_service = InterfaceService()
         self.building_controller = BuildingController()
         self.employee_controller = EmployeeController(self.building_controller.get_room_board(), self.ground)
         self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
@@ -103,14 +99,13 @@ class Game:
         self.keyboard_controller = KeyboardController(self.employee_controller, self.mouse_controller, self.company)
 
         self.employee_controller.create_employee(100, 200, self.company)
-        self.building_controller.build_room((0,0), RoomType.CORRIDOR)
-        self.building_controller.build_room((1,0), RoomType.DINING_ROOM)
-        self.building_controller.build_room((2,0), RoomType.OFFICE_ROOM)
-        self.building_controller.build_room((3,0), RoomType.ELEVATOR)
-        self.building_controller.build_room((4,0), RoomType.CORRIDOR)
-        self.building_controller.build_room((5,0), RoomType.CONFERENCE_ROOM)
-        self.building_controller.build_room((6,0), RoomType.CORRIDOR)
-
+        self.building_controller.build_room((0, 0), RoomType.CORRIDOR)
+        self.building_controller.build_room((1, 0), RoomType.DINING_ROOM)
+        self.building_controller.build_room((2, 0), RoomType.OFFICE_ROOM)
+        self.building_controller.build_room((3, 0), RoomType.ELEVATOR)
+        self.building_controller.build_room((4, 0), RoomType.CORRIDOR)
+        self.building_controller.build_room((5, 0), RoomType.CONFERENCE_ROOM)
+        self.building_controller.build_room((6, 0), RoomType.CORRIDOR)
 
         # self.employee_controller.create_employee(120, 280, "Bob2", self._company)
         self.employee_controller.employee_service.employee_list[0]._needs.hunger = 20

@@ -1,3 +1,1 @@
-Jak poprawnie umiejscowić calendar w interfejsie, żeby spadał wraz z left_wing?
-po prostu umiejscowić go względem left_wing i updatować jego pozycje kiedy left wing schodzi w dół.
-dodać opcję w dropdown_wing jakiś enum z obiektami które będą schodzić z wing
+timeservice jest decoupled od interfaceservice a tekst kalendara jest w toolbar a calendar matrix jest w toolbar przez co nie moza update_calendar zrobić

@@ -1,9 +1,6 @@
-import pygame.time
-
-
 class Clock:
     def __init__(self):
-        self.progress = 0
+        self.progress = 95
 
     def tick(self):
         self.progress = (self.progress + 1) % 100
