@@ -36,6 +36,8 @@ class Game:
             self.keyboard_controller.scroll_view()
             self.mouse_controller.move_cursor()
             self.employee_controller.move_employees()
+            self.employee_controller.hire_employee(self.building_controller.building_service.room_board[0][0].rect.x,
+                                                   self.building_controller.building_service.room_board[0][0].rect.y + 60)
             self.interface_service.update_time()
             self.draw()
             self.clock.tick(30)
@@ -71,30 +73,23 @@ class Game:
 
         # draw all elements of interface
         for element in self.interface_service.element_list:
-            # icons should always be displayed
-            if issubclass(element.__class__, StaticElement):
-                self.screen.blit(element.image, element.rect)
-            # elements should only be displayed if user clicked on icon
-            elif self.interface_service.view_type != self.interface_service.NO_TYPE:
+            # icons should always be displayed and elements should only be displayed if user clicked on icon
+            if issubclass(element.__class__, StaticElement) or self.interface_service.view_type != self.interface_service.NO_TYPE:
                 # draw hover effect
                 if element.hover_effect == element.DROP_SHADOW:
-                    self.screen.blit(element.hover_surface,element.rect)
-                self.screen.blit(element.image,element.rect)
-
-
-
-
-
+                    self.screen.blit(element.hover_surface, element.rect)
+                self.screen.blit(element.image, element.rect)
 
         # draw different views based on which icon user clicked
-        if self.interface_service.view_type == self.interface_service.CALENDAR:
+        if self.interface_service.view_type == self.interface_service.HIRE_EMPLOYEE:
+            self.screen.blit(self.interface_service.hire_element.get_emp_image(), self.interface_service.hire_element.rect)
+        elif self.interface_service.view_type == self.interface_service.PURCHASE_ROOM:
+            self.screen.blit(self.interface_service.building_element.get_room_image(), self.interface_service.building_element.rect)
+        elif self.interface_service.view_type == self.interface_service.CALENDAR:
             self.screen.blit(self.interface_service.calendar_element.image, self.interface_service.calendar_element.rect)
             self.screen.blit(self.interface_service.calendar_element.page_images[self.interface_service.calendar_element.current_page],
                              self.interface_service.calendar_element.page_rect)
             pygame.draw.rect(self.screen, (255, 0, 0), self.interface_service.calendar_element.page_marker_rect, 3)
-
-
-
 
         pygame.draw.line(self.screen, (0, 0, 0), (397, 55), self.interface_service.clock_element.clk_pointer, 5)
         # self.screen.blit(self.hunger, self.text_rect.move(0, 125))
@@ -107,12 +102,13 @@ class Game:
 
         self.interface_service = InterfaceService()
         self.building_controller = BuildingController()
-        self.employee_controller = EmployeeController(self.building_controller.get_room_board(), self.ground)
+        self.employee_controller = EmployeeController(self.building_controller.get_room_board(), self.ground, self.company,
+                                                      self.interface_service)
         self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
                                                 self.building_controller, self.ground, self.interface_service)
         self.keyboard_controller = KeyboardController(self.employee_controller, self.mouse_controller, self.company)
 
-        self.employee_controller.create_employee(100, 200, self.company)
+        self.employee_controller.create_employee(100, 200)
         self.building_controller.build_room((0, 0), RoomType.CORRIDOR)
         self.building_controller.build_room((1, 0), RoomType.DINING_ROOM)
         self.building_controller.build_room((2, 0), RoomType.OFFICE_ROOM)

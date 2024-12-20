@@ -3,7 +3,7 @@ import math
 from os import listdir
 
 import pygame.image
-from pygame import image, font, Rect
+from pygame import font, Rect
 
 from model.Interface.InterfaceElement import InterfaceElement
 
@@ -49,7 +49,7 @@ class CalendarElement(InterfaceElement):
             self.page_marker_pos = [0, self.page_marker_pos[1] + 1]
         else:
             self.page_marker_pos[0] += 1
-        self.page_marker_rect.x = self.page_marker_rect_fixed_pos[0] + self.page_marker_pos[0] * 32
+        self.page_marker_rect.x = self.page_marker_rect_fixed_pos[0] + self.page_marker_pos[0] * 34
         self.page_marker_rect.y = self.page_marker_rect_fixed_pos[1] + self.page_marker_pos[1] * 35
 
     def move(self, x, y):

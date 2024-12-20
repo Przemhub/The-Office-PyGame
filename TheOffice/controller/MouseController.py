@@ -4,6 +4,7 @@ from controller.BuildController import BuildingController
 from model.CursorObject import CursorObject
 from model.Interface.StaticElement import StaticElement
 from service.Interface.InterfaceService import InterfaceService
+from service.RoomType import RoomType
 
 
 class MouseController:
@@ -66,18 +67,15 @@ class MouseController:
             for element in self.interface_service.element_list:
                 if self.cursor.collides_with(element.rect):
                     element.click()
+            if self.interface_service.purchased_room != RoomType.NONE:
+                self.cursor.set_cursor_object(self.interface_service.purchased_room)
+                self.interface_service.purchased_room  = RoomType.NONE
         self.hover_event()
 
     def hover_event(self):
-        # if the elements are not shown, then don't execute hover on them
-        if self.interface_service.view_type == self.interface_service.NO_TYPE:
-            return
         for element in self.interface_service.element_list:
-            # static elements are not hoverable
-            if issubclass(element.__class__, StaticElement):
-                continue
             if self.cursor.collides_with(element.rect):
-                element.hover_effect = element.DROP_SHADOW
+                element.hover(element)
             else:
                 element.hover_effect = element.NO_EFFECT
 
