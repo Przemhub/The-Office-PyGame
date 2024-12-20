@@ -2,6 +2,7 @@ import pygame
 
 from controller.BuildController import BuildingController
 from model.CursorObject import CursorObject
+from model.Interface.StaticElement import StaticElement
 from service.Interface.InterfaceService import InterfaceService
 
 
@@ -19,6 +20,7 @@ class MouseController:
         self.cursor = CursorObject()
         self.board_pos = (-1, -1)
 
+    # currently dropped in favour of keyboard view scrolling
     def scroll_view(self):
         if pygame.mouse.get_pos()[0] >= self.screen.get_width() - self.threshold:
             self.move_objects(-self.speed, 0)
@@ -47,6 +49,7 @@ class MouseController:
     def move_objects(self, x, y):
         for emp in self.emp_list:
             emp.rect = emp.rect.move(x, y)
+        # for each action object in each room in each floor move them according to camera position
         for floor in self.room_board:
             for room in floor:
                 room.rect = room.rect.move(x, y)
@@ -63,5 +66,18 @@ class MouseController:
             for element in self.interface_service.element_list:
                 if self.cursor.collides_with(element.rect):
                     element.click()
-            # implement interdace for calendar
+        self.hover_event()
+
+    def hover_event(self):
+        # if the elements are not shown, then don't execute hover on them
+        if self.interface_service.view_type == self.interface_service.NO_TYPE:
+            return
+        for element in self.interface_service.element_list:
+            # static elements are not hoverable
+            if issubclass(element.__class__, StaticElement):
+                continue
+            if self.cursor.collides_with(element.rect):
+                element.hover_effect = element.DROP_SHADOW
+            else:
+                element.hover_effect = element.NO_EFFECT
 

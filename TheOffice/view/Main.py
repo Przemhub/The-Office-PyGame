@@ -6,6 +6,7 @@ from controller.KeyboardController import KeyboardController
 from controller.MouseController import MouseController
 from model.Company import Company
 from model.Ground import Ground
+from model.Interface.StaticElement import StaticElement
 from service.Interface.InterfaceService import InterfaceService
 from service.RoomType import RoomType
 
@@ -68,14 +69,32 @@ class Game:
         for emp in self.employee_controller.employee_service.employee_list:
             self.screen.blit(emp.image, emp.rect)
 
+        # draw all elements of interface
         for element in self.interface_service.element_list:
-            self.screen.blit(element.image, element.rect)
+            # icons should always be displayed
+            if issubclass(element.__class__, StaticElement):
+                self.screen.blit(element.image, element.rect)
+            # elements should only be displayed if user clicked on icon
+            elif self.interface_service.view_type != self.interface_service.NO_TYPE:
+                # draw hover effect
+                if element.hover_effect == element.DROP_SHADOW:
+                    self.screen.blit(element.hover_surface,element.rect)
+                self.screen.blit(element.image,element.rect)
 
-        # The interface
-        self.screen.blit(self.interface_service.calendar_element.image, self.interface_service.calendar_element.rect)
-        self.screen.blit(self.interface_service.calendar_element.page_images[self.interface_service.calendar_element.current_page],
-                         self.interface_service.calendar_element.page_rect)
-        pygame.draw.rect(self.screen, (255, 0, 0), self.interface_service.calendar_element.page_marker_rect, 3)
+
+
+
+
+
+        # draw different views based on which icon user clicked
+        if self.interface_service.view_type == self.interface_service.CALENDAR:
+            self.screen.blit(self.interface_service.calendar_element.image, self.interface_service.calendar_element.rect)
+            self.screen.blit(self.interface_service.calendar_element.page_images[self.interface_service.calendar_element.current_page],
+                             self.interface_service.calendar_element.page_rect)
+            pygame.draw.rect(self.screen, (255, 0, 0), self.interface_service.calendar_element.page_marker_rect, 3)
+
+
+
 
         pygame.draw.line(self.screen, (0, 0, 0), (397, 55), self.interface_service.clock_element.clk_pointer, 5)
         # self.screen.blit(self.hunger, self.text_rect.move(0, 125))

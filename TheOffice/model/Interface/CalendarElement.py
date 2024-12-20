@@ -5,24 +5,23 @@ from os import listdir
 import pygame.image
 from pygame import image, font, Rect
 
-from model.Interface.Gadget import Gadget
+from model.Interface.InterfaceElement import InterfaceElement
 
 
-class CalendarElement(Gadget):
-    def __init__(self):
-        super().__init__(Rect(40, -222, 283, 192), image.load("../resources/interface/dropdowns/calendar.png"))
+class CalendarElement(InterfaceElement):
+    def __init__(self, rect, image):
+        super().__init__(rect, image)
         self.font = font.SysFont("Calibri", 25, True)
-        self.page_images = [pygame.transform.scale(pygame.image.load("../resources/interface/dropdowns/pages/" + page), (253, 193)) for page
-                            in
-                            listdir("../resources/interface/dropdowns/pages")]
-        self.page_rect = Rect(55, -230, self.page_images[0].get_width(), self.page_images[0].get_height())
+        self.page_images = [pygame.transform.scale(pygame.image.load("../resources/interface/elements/calendar/pages/" + page), (253, 193))
+                            for page in listdir("../resources/interface/elements/calendar/pages")]
+        self.page_rect = Rect(270, 160, self.page_images[0].get_width(), self.page_images[0].get_height())
         self.current_page = 0
         self.calendar_matrix = self.init_calendar_matrix(2024)
         self.current_date = datetime.date(2024, 1, 1)
         offset = datetime.date(2024, self.current_date.month, 1).weekday()
-        self.page_marker_pos = [7, 3]
-        self.page_marker_rect_fixed_pos = (52, -213)
-        self.page_marker_rect = Rect(52 + self.page_marker_pos[0] * 32, -213 + self.page_marker_pos[1] * 35, 34, 36)
+        self.page_marker_pos = [1, 0]
+        self.page_marker_rect_fixed_pos = (278, 176)
+        self.page_marker_rect = Rect(278 + self.page_marker_pos[0] * 32, 176 + self.page_marker_pos[1] * 35, 34, 36)
 
     def init_calendar_matrix(self, year):
         calendar_matrix = [[]]
