@@ -13,8 +13,8 @@ class CursorObject:
         self.object_id = -1
 
     def relocate(self, x, y):
-        self.rect.x = x - 150
-        self.rect.y = y - 150
+        self.rect.x = x
+        self.rect.y = y
 
     def collides_with(self, rect):
         return self.rect.colliderect(rect)
@@ -23,8 +23,9 @@ class CursorObject:
         self.image = self.images_list[cursor_object_id]
         self.object_id = cursor_object_id
 
-    def is_active(self):
+    def drags_room(self):
         return self.image is not None
+
 
     def init_images(self):
         self.images_list = [

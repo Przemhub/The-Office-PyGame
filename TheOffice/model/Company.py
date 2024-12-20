@@ -1,4 +1,4 @@
-class CompanyData:
+class Company:
     def  __init__(self):
         self.employee_num = 0
         self.money = 0

@@ -4,8 +4,9 @@ from controller.BuildController import BuildingController
 from controller.EmployeeController import EmployeeController
 from controller.KeyboardController import KeyboardController
 from controller.MouseController import MouseController
-from model.Company import CompanyData
+from model.Company import Company
 from model.Ground import Ground
+from service.Interface.InterfaceService import InterfaceService
 from service.RoomType import RoomType
 
 
@@ -30,18 +31,20 @@ class Game:
             self.screen.fill((155, 232, 255))
             self.employee_controller.drag_employee()
             self.update_text()
-            self.mouse_controller.scroll_view()
+            # self.mouse_controller.scroll_view()
+            self.keyboard_controller.scroll_view()
             self.mouse_controller.move_cursor()
             self.employee_controller.move_employees()
+            self.interface_service.update_time()
             self.draw()
             self.clock.tick(30)
             pygame.display.flip()
 
     def update_text(self):
         self.paper_sold = self.font.render(
-            "Paper sold: " + str(self.employee_controller.employee_service.employee_list[0]._stats.papers_sold), True,
+            "Paper sold: " + str(self.company.papers_sold), True,
             (255, 255, 255))
-        self.money = self.font.render("Money: " + str(self._company.money), True, (255, 255, 255))
+        self.money = self.font.render("Money: " + str(self.company.money), True, (255, 255, 255))
         self.hunger = self.font.render(
             "Hunger: " + str(self.employee_controller.employee_service.employee_list[0]._needs.hunger), True,
             (255, 255, 255))
@@ -52,6 +55,7 @@ class Game:
         self.motivation = self.font.render(
             "Motivation: " + str(self.employee_controller.employee_service.employee_list[0]._needs.motivation), True,
             (255, 255, 255))
+        self.clock_time = self.font.render("Time: " + self.interface_service.get_clock_progress_str(), True, (255, 255, 255))
 
     def draw(self):
         for floor in range(0, len(self.building_controller.get_room_board())):
@@ -59,36 +63,44 @@ class Game:
                 self.screen.blit(room.image, room.rect)
                 # for action_obj in room.action_objects:
                 #     pygame.draw.rect(self.screen,(0,0,0),action_obj.rect)
-        if self.mouse_controller.cursor.is_active():
-            self.screen.blit(self.mouse_controller.cursor.image, self.mouse_controller.cursor.rect)
+        if self.mouse_controller.cursor.drags_room():
+            self.screen.blit(self.mouse_controller.cursor.image, self.mouse_controller.cursor.rect.move(-150, -150))
         for emp in self.employee_controller.employee_service.employee_list:
             self.screen.blit(emp.image, emp.rect)
 
-        self.screen.blit(self.paper_sold, pygame.Rect(300, 100, 1, 1))
-        self.screen.blit(self.money, pygame.Rect(300, 125, 1, 1))
-        self.screen.blit(self.hunger, pygame.Rect(300, 225, 1, 1))
-        self.screen.blit(self.stress, pygame.Rect(300, 200, 1, 1))
-        self.screen.blit(self.motivation, pygame.Rect(300, 250, 1, 1))
+        for element in self.interface_service.element_list:
+            self.screen.blit(element.image, element.rect)
+
+        # The interface
+        self.screen.blit(self.interface_service.calendar_element.image, self.interface_service.calendar_element.rect)
+        self.screen.blit(self.interface_service.calendar_element.page_images[self.interface_service.calendar_element.current_page],
+                         self.interface_service.calendar_element.page_rect)
+        pygame.draw.rect(self.screen, (255, 0, 0), self.interface_service.calendar_element.page_marker_rect, 3)
+
+        pygame.draw.line(self.screen, (0, 0, 0), (397, 55), self.interface_service.clock_element.clk_pointer, 5)
+        # self.screen.blit(self.hunger, self.text_rect.move(0, 125))
+        # self.screen.blit(self.stress, self.text_rect.move(0, 100))
+        # self.screen.blit(self.motivation, self.text_rect.move(0, 150))
 
     def init_objects(self):
         self.ground = Ground(self.screen)
-        self._company = CompanyData()
+        self.company = Company()
 
+        self.interface_service = InterfaceService()
         self.building_controller = BuildingController()
         self.employee_controller = EmployeeController(self.building_controller.get_room_board(), self.ground)
         self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
-                                                self.building_controller, self.ground)
-        self.keyboard_controller = KeyboardController(self.employee_controller, self.mouse_controller, self._company)
+                                                self.building_controller, self.ground, self.interface_service)
+        self.keyboard_controller = KeyboardController(self.employee_controller, self.mouse_controller, self.company)
 
-        self.employee_controller.create_employee(100, 200, self._company)
-        self.building_controller.build_room((0,0), RoomType.CORRIDOR)
-        self.building_controller.build_room((1,0), RoomType.DINING_ROOM)
-        self.building_controller.build_room((2,0), RoomType.OFFICE_ROOM)
-        self.building_controller.build_room((3,0), RoomType.ELEVATOR)
-        self.building_controller.build_room((4,0), RoomType.CORRIDOR)
-        self.building_controller.build_room((5,0), RoomType.CONFERENCE_ROOM)
-        self.building_controller.build_room((6,0), RoomType.CORRIDOR)
-
+        self.employee_controller.create_employee(100, 200, self.company)
+        self.building_controller.build_room((0, 0), RoomType.CORRIDOR)
+        self.building_controller.build_room((1, 0), RoomType.DINING_ROOM)
+        self.building_controller.build_room((2, 0), RoomType.OFFICE_ROOM)
+        self.building_controller.build_room((3, 0), RoomType.ELEVATOR)
+        self.building_controller.build_room((4, 0), RoomType.CORRIDOR)
+        self.building_controller.build_room((5, 0), RoomType.CONFERENCE_ROOM)
+        self.building_controller.build_room((6, 0), RoomType.CORRIDOR)
 
         # self.employee_controller.create_employee(120, 280, "Bob2", self._company)
         self.employee_controller.employee_service.employee_list[0]._needs.hunger = 20
@@ -98,6 +110,7 @@ class Game:
         self.font = pygame.font.SysFont("Calibri", 24, True)
         self.paper_sold = self.font.render("Paper sold: ", True, (255, 255, 255))
         self.money = self.font.render("Money: ", True, (255, 255, 255))
+        self.text_rect = pygame.Rect(0, 0, 1, 1)
 
     def init_screen(self):
         pygame.display.init()
