@@ -6,7 +6,6 @@ from controller.KeyboardController import KeyboardController
 from controller.MouseController import MouseController
 from model.Company import Company
 from model.Ground import Ground
-from model.Interface.Toolbar import Toolbar
 from service.Interface.InterfaceService import InterfaceService
 from service.RoomType import RoomType
 
@@ -37,7 +36,6 @@ class Game:
             self.mouse_controller.move_cursor()
             self.employee_controller.move_employees()
             self.interface_service.update_time()
-            self.interface_service.pull_down_animation()
             self.draw()
             self.clock.tick(30)
             pygame.display.flip()
@@ -70,19 +68,16 @@ class Game:
         for emp in self.employee_controller.employee_service.employee_list:
             self.screen.blit(emp.image, emp.rect)
 
-        # self.screen.blit(self.paper_sold, self.text_rect.move(40,25))
-        # self.screen.blit(self.money, self.text_rect.move(200, 25))
-        pygame.draw.rect(self.screen, (33, 75, 175), self.interface_service.toolbar.left_wing)
-        pygame.draw.rect(self.screen, (33, 75, 175), self.interface_service.toolbar.right_wing)
+        for element in self.interface_service.element_list:
+            self.screen.blit(element.image, element.rect)
 
         # The interface
-        self.screen.blit(self.interface_service.calendar.image, self.interface_service.calendar.rect)
-        self.screen.blit(self.interface_service.calendar.page_images[self.interface_service.calendar.current_page], self.interface_service.calendar.page_rect)
-        pygame.draw.rect(self.screen, (255,0,0), self.interface_service.calendar.page_marker_rect,3)
-        self.screen.blit(self.interface_service.toolbar.image, self.interface_service.toolbar.rect)
-        self.screen.blit(self.interface_service.toolbar.calendar_icon.image, self.interface_service.toolbar.calendar_icon.rect)
+        self.screen.blit(self.interface_service.calendar_element.image, self.interface_service.calendar_element.rect)
+        self.screen.blit(self.interface_service.calendar_element.page_images[self.interface_service.calendar_element.current_page],
+                         self.interface_service.calendar_element.page_rect)
+        pygame.draw.rect(self.screen, (255, 0, 0), self.interface_service.calendar_element.page_marker_rect, 3)
 
-        pygame.draw.line(self.screen, (0, 0, 0), (397, 55), self.interface_service.toolbar.clk_pointer, 5)
+        pygame.draw.line(self.screen, (0, 0, 0), (397, 55), self.interface_service.clock_element.clk_pointer, 5)
         # self.screen.blit(self.hunger, self.text_rect.move(0, 125))
         # self.screen.blit(self.stress, self.text_rect.move(0, 100))
         # self.screen.blit(self.motivation, self.text_rect.move(0, 150))

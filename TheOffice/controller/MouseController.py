@@ -60,9 +60,8 @@ class MouseController:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.cursor.drags_room():
                 self.place_building()
-            elif self.press_icon(self.interface_service.toolbar.calendar_icon):
-                self.interface_service.toolbar.left_wing.gadget = self.interface_service.calendar
-                self.interface_service.pull_push_wing(self.interface_service.LEFT_WING)
+            for element in self.interface_service.element_list:
+                if self.cursor.collides_with(element.rect):
+                    element.click()
+            # implement interdace for calendar
 
-    def press_icon(self, icon):
-        return self.cursor.rect.colliderect(icon.rect)

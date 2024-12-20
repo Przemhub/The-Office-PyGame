@@ -1,74 +1,65 @@
-import datetime
+Reimport pygame
+from pygame import image
+from pygame.rect import Rect
 
-import pygame
-
-from model.Interface.Toolbar import Toolbar
-from model.Interface.Wing import Wing
-from model.Time.Calendar import Calendar
-from model.Time.Clock import Clock
+from model.Interface.ClockElement import ClockElement
+from model.Interface.InterfaceElement import InterfaceElement
+from model.Time.CalendarElement import CalendarElement
+from service.Interface.RoomPurchaseService import RoomPurchaseService
 
 
 class InterfaceService:
     def __init__(self):
-        self.LEFT_WING = 0
-        self.RIGHT_WING = 1
-        self.left_down = False
-        self.right_down = False
         self.time_dist = 1800
         self.timestamp = pygame.time.get_ticks()
-        self.calendar = Calendar()
-        self.toolbar = Toolbar()
-        self.clock = Clock()
+        self.room_purchase_service = RoomPurchaseService()
 
-    def pull_down_animation(self):
-        if self.left_down:
-            if self.is_not_fully_down(self.toolbar.left_wing):
-                self.move_wing_down(self.toolbar.left_wing)
-        elif self.right_down:
-            if self.is_not_fully_down(self.toolbar.right_wing):
-                self.move_wing_down(self.toolbar.right_wing)
-        else:
-            if self.is_not_fully_up(self.toolbar.left_wing):
-                self.move_wing_up(self.toolbar.left_wing)
+        self.calendar_element = CalendarElement()
+        self.clock_element = ClockElement()
+        self.arrow_right_element = InterfaceElement(Rect(100, 100, 100, 100), image.load("../resources/interface/icons/accept.png"),
+                                                    self.switch_view_right)
+        self.arrow_left_element = InterfaceElement(Rect(100, 100, 100, 100), image.load("../resources/interface/icons/accept.png"),
+                                                   self.switch_view_left)
+        self.accept_element = InterfaceElement(Rect(300, 400, 100, 100), image.load("../resources/interface/icons/accept.png"),
+                                               self.click_accept)
+        self.reject_element = InterfaceElement(Rect(400, 400, 100, 100), image.load("../resources/interface/icons/reject.png"),
+                                               self.click_reject)
+        self.calendar_icon = InterfaceElement(Rect(220, 8, 75, 60), image.load("../resources/interface/icons/calendar.png"),
+                                              self.click_calendar)
+        self.element_list = [self.arrow_left_element, self.arrow_right_element, self.accept_element, self.reject_element, self.clock_element]
 
-    def move_wing_down(self, wing: Wing):
-        if wing.rect.top < self.toolbar.rect.bottom - 50:
-            wing.gadget.move(0, 35)  # move the gadget inside the wing with it
-            wing.move(0, 35)
-        elif wing.rect.top < self.toolbar.rect.bottom - 20:
-            wing.gadget.move(0, 15)
-            wing.move(0, 15)
-        wing.gadget.move(0, 5)
-        wing.move(0, 5)
-
-    def pull_push_wing(self, side):
-        if side == self.LEFT_WING:
-            self.left_down = not self.left_down
-        else:
-            self.right_down = True
-
-    def move_wing_up(self, wing):
-        if wing.rect.top > self.toolbar.rect.bottom - 50:
-            wing.gadget.move(0, -20)
-            wing.move(0, -20)
-        wing.move(0, -50)
-        wing.gadget.move(0, -50)
-
-    def is_not_fully_down(self, wing):
-        return wing.rect.top < self.toolbar.rect.bottom
-
-    def is_not_fully_up(self, wing):
-        return wing.rect.bottom > self.toolbar.rect.top
+        self.view_element = InterfaceElement(Rect(300, 400, 100, 100), image.load("../resources/interface/icons/accept.png"))
+        self.view_type = 1
+        self.PURCHASE_ROOM = 1
+        self.HIRE_EMPLOYEE = 2
+        self.SETTINGS = 3
+        self.CALENDAR = 4
 
     def update_time(self):
         if pygame.time.get_ticks() - self.timestamp > self.time_dist:
-            self.clock.tick()
-            theta = 360 * self.clock.progress / 100
-            self.toolbar.update_clock(theta)
-            if self.clock.progress == 99:
-                self.calendar.update()
-
+            self.clock_element.tick()
+            theta = 360 * self.clock_element.progress / 100
+            self.clock_element.update_clock(theta)
+            if self.clock_element.progress == 99:
+                self.calendar_element.update()
             self.timestamp = pygame.time.get_ticks()
 
     def get_clock_progress_str(self):
-        return self.clock.get_progress_str()
+        return self.clock_element.get_progress_str()
+
+    def switch_view_right(self):
+        if self.view_type == self.PURCHASE_ROOM:
+            self.room_purchase_service.next_room()
+
+    def switch_view_left(self):
+        if self.view_type == self.PURCHASE_ROOM:
+            self.room_purchase_service.previous_room()
+
+    def click_accept(self):
+        self.view_element.rect = self.view_element.rect.move(50, 0)
+
+    def click_reject(self):
+        self.view_element.rect = self.view_element.rect.move(-50, 0)
+
+    def click_calendar(self):
+        self.view_type = self.CALENDAR
