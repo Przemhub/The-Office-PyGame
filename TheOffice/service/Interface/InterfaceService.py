@@ -18,7 +18,7 @@ class InterfaceService:
                                                 image.load("../resources/interface/elements/calendar/calendar.png"))
         self.clock_element = ClockElement(Rect(20, 0, 1, 45), image.load("../resources/interface/elements/clock.png"))
         self.building_element = BuildingElement(Rect(280, 170, 283, 192), image.load("../resources/rooms/office.png"))
-        self.hire_element = HireElement(Rect(280, 170, 60, 140), image.load("../resources/employees/employee.png"))
+        self.hire_element = HireElement(Rect(280, 170, 60, 140), image.load("../resources/employees/male/emp1/employee.png"))
         self.arrow_right_element = InterfaceElement(Rect(570, 170, 100, 170), image.load("../resources/interface/elements/right.png"),
                                                     self.switch_view_right, self.drop_shadow)
         self.arrow_left_element = InterfaceElement(Rect(120, 170, 100, 170), image.load("../resources/interface/elements/left.png"),
@@ -33,7 +33,7 @@ class InterfaceService:
         self.build_icon = StaticElement(Rect(520, 8, 75, 60), image.load("../resources/interface/icons/build.png"), self.click_build,
                                         self.drop_shadow)
         self.hire_icon = StaticElement(Rect(620, 8, 75, 60), image.load("../resources/interface/icons/hire.png"), self.click_hire,
-                                        self.drop_shadow)
+                                       self.drop_shadow)
         self.element_list = [self.arrow_left_element, self.arrow_right_element, self.accept_element, self.reject_element,
                              self.clock_element, self.calendar_icon, self.build_icon, self.hire_icon]
 
@@ -60,7 +60,11 @@ class InterfaceService:
 
     # on clicks
     def switch_view_right(self):
-        if self.view_type == self.PURCHASE_ROOM:
+        if self.view_type == self.HIRE_EMPLOYEE:
+            self.hire_element.emp_index += 1
+            if self.hire_element.emp_index == len(self.hire_element.emp_list):
+                self.hire_element.emp_index = 0
+        elif self.view_type == self.PURCHASE_ROOM:
             self.building_element.room_index += 1
             if self.building_element.room_index == len(self.building_element.room_image_list):
                 self.building_element.room_index = 0
@@ -70,7 +74,11 @@ class InterfaceService:
                 self.calendar_element.current_page = 0
 
     def switch_view_left(self):
-        if self.view_type == self.PURCHASE_ROOM:
+        if self.view_type == self.HIRE_EMPLOYEE:
+            self.hire_element.emp_index -= 1
+            if self.hire_element.emp_index < 0:
+                self.hire_element.emp_index = len(self.hire_element.emp_list) - 1
+        elif self.view_type == self.PURCHASE_ROOM:
             self.building_element.room_index -= 1
             if self.building_element.room_index < 0:
                 self.building_element.room_index = len(self.building_element.room_image_list) - 1

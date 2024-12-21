@@ -1,5 +1,6 @@
 from pygame import time, mouse
 
+from model.Company import Company
 from model.Employee.Employee import Employee
 from model.Ground import Ground
 from service.EmployeeServices.EmployeeManagement.AnimationService import AnimationService
@@ -57,12 +58,17 @@ class EmployeeManagementService:
                 if destination is None:
                     self.collision_service.update_action_object_status(emp.destination)
                     self.collision_service.adjust_emp_to_action_object(emp, emp.destination, emp.destination.room,
-                                                     emp.destination.room.action_objects.index(emp.destination))
+                                                                       emp.destination.room.action_objects.index(emp.destination))
                     emp.set_desk(emp.destination)
                 self.dest_service.change_destination(emp, destination)
 
-    def create_employee(self, x, y, name, company):
+    def create_employee(self, x, y, name: str, company: Company):
         emp = Employee(x, y, name, company)
+        self.employee_list.append(emp)
+        self.needs_service_t.insert_emp(emp)
+
+    def create_specific_employee(self, x, y, name: str, abilities: tuple, images_path:str, company: Company):
+        emp = Employee(x, y, name, company, abilities, images_path)
         self.employee_list.append(emp)
         self.needs_service_t.insert_emp(emp)
 
@@ -115,7 +121,6 @@ class EmployeeManagementService:
                         self.employee_list[self.dragged_emp_i]._needs.decrease_stress()
                         if not self.employee_list[self.dragged_emp_i].is_stressed():
                             self.employee_list[self.dragged_emp_i]._needs.meet()
-
 
             self.employee_list[self.dragged_emp_i].rect.centerx = mouse.get_pos()[0]
             self.employee_list[self.dragged_emp_i].rect.centery = mouse.get_pos()[1]

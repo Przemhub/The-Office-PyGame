@@ -36,8 +36,7 @@ class Game:
             self.keyboard_controller.scroll_view()
             self.mouse_controller.move_cursor()
             self.employee_controller.move_employees()
-            self.employee_controller.hire_employee(self.building_controller.building_service.room_board[0][0].rect.x,
-                                                   self.building_controller.building_service.room_board[0][0].rect.y + 60)
+            self.employee_controller.hire_employee(self.first_room.rect.midleft)
             self.interface_service.update_time()
             self.draw()
             self.clock.tick(30)
@@ -116,6 +115,8 @@ class Game:
         self.building_controller.build_room((4, 0), RoomType.CORRIDOR)
         self.building_controller.build_room((5, 0), RoomType.CONFERENCE_ROOM)
         self.building_controller.build_room((6, 0), RoomType.CORRIDOR)
+
+        self.first_room = self.building_controller.building_service.room_board[0][0]
 
         # self.employee_controller.create_employee(120, 280, "Bob2", self._company)
         self.employee_controller.employee_service.employee_list[0]._needs.hunger = 20

@@ -9,9 +9,14 @@ from model.Furniture import Furniture
 
 class Employee(sprite.Sprite):
 
-    def __init__(self, x, y, name, company):
+    def __init__(self, x, y, name, company, abilities=None, images_path=None):
         sprite.Sprite.__init__(self)
         self.name = name
+        self._abilities_tuple = abilities
+        if images_path != None:
+            self.images_path = images_path
+        else:
+            self.images_path = "../resources/employees/male/emp1/"
         self.current_position = -1
         self.current_drag_position = 2
         self.company_observer = company
@@ -67,12 +72,12 @@ class Employee(sprite.Sprite):
             "employee_shake2.png",
             "employee_shake3.png"
         ]
-        self.falling_image = image.load("../resources/employees/employee_fall.png")
-        self.image = image.load("../resources/employees/employee.png")
-        self.walk_images = [image.load("../resources/employees/" + img_name) for img_name in walk_img_names]
-        self.drag_images = [image.load("../resources/employees/" + img_name) for img_name in drag_img_names]
-        self.sit_images = [image.load("../resources/employees/" + img_name) for img_name in sit_img_names]
-        self.shake_images = [image.load("../resources/employees/" + img_name) for img_name in shake_img_names]
+        self.falling_image = image.load(self.images_path + "employee_fall.png")
+        self.image = image.load(self.images_path + "employee.png")
+        self.walk_images = [image.load(self.images_path + img_name) for img_name in walk_img_names]
+        self.drag_images = [image.load(self.images_path + img_name) for img_name in drag_img_names]
+        self.sit_images = [image.load(self.images_path + img_name) for img_name in sit_img_names]
+        self.shake_images = [image.load(self.images_path + img_name) for img_name in shake_img_names]
         self.mask = mask.from_surface(self.image)
         self.rect = Rect(x, y, self.image.get_width(), self.image.get_height())
 
@@ -86,12 +91,15 @@ class Employee(sprite.Sprite):
         if self.assigned_furniture is not None:
             self.assigned_furniture.taken = False
         self.assigned_furniture = None
-        self.image = image.load("../resources/employees/employee.png")
+        self.image = image.load(self.images_path + "/employee.png")
 
     def init_data(self):
         self._stats = Statistics()
         self._needs = Needs()
-        self._abilities = Abilities()
+        if self._abilities_tuple != None:
+            self._abilities = Abilities(self._abilities_tuple[0], self._abilities_tuple[1], self._abilities_tuple[2])
+        else:
+            self._abilities = Abilities()
         self.direction = ''
         self.destination = None
         self.destination_mem = None
