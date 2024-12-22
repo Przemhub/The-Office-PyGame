@@ -10,7 +10,7 @@ class ClockElement(StaticElement):
         super().__init__(rect, image)
         self.clk_pointer = (397, 15)
         self._radius = 35
-        self.progress = 95
+        self.progress = 0
 
     def tick(self):
         self.progress = (self.progress + 1) % 100

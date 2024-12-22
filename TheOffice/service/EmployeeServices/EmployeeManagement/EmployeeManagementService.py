@@ -67,8 +67,8 @@ class EmployeeManagementService:
         self.employee_list.append(emp)
         self.needs_service_t.insert_emp(emp)
 
-    def create_specific_employee(self, x, y, name: str, abilities: tuple, images_path:str, company: Company):
-        emp = Employee(x, y, name, company, abilities, images_path)
+    def create_specific_employee(self, x, y, name: str, abilities: tuple, images_path:str, salary: int, company: Company):
+        emp = Employee(x, y, name, company, abilities, images_path, salary)
         self.employee_list.append(emp)
         self.needs_service_t.insert_emp(emp)
 
@@ -169,3 +169,13 @@ class EmployeeManagementService:
         if delay > frames:
             self.initial_ticks[initial_tick_id] = time.get_ticks()
         return delay >= frames
+
+    def pay_employees(self):
+        if not self.employee_list[0].got_paid:
+            for employee in self.employee_list:
+                employee.get_paid()
+
+    def reset_payment_system(self):
+        if self.employee_list[0].got_paid:
+            for employee in self.employee_list:
+                employee.got_paid = False

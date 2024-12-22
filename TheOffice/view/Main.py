@@ -31,6 +31,7 @@ class Game:
                 self.employee_controller.grab_employee_event(event)
             self.screen.fill((155, 232, 255))
             self.employee_controller.drag_employee()
+            self.employee_controller.manage_salaries()
             self.update_text()
             # self.mouse_controller.scroll_view()
             self.keyboard_controller.scroll_view()
@@ -43,10 +44,6 @@ class Game:
             pygame.display.flip()
 
     def update_text(self):
-        self.paper_sold = self.font.render(
-            "Paper sold: " + str(self.company.papers_sold), True,
-            (255, 255, 255))
-        self.money = self.font.render("Money: " + str(self.company.money), True, (255, 255, 255))
         self.stress = self.font.render(
             "Stress: " + str(self.employee_controller.employee_service.employee_list[0]._needs.stress), True,
             (255, 255, 255))
@@ -56,15 +53,18 @@ class Game:
             (255, 255, 255))
         self.clock_time = self.font.render("Time: " + self.interface_service.get_clock_progress_str(), True, (255, 255, 255))
         if self.interface_service.view_type == self.interface_service.HIRE_EMPLOYEE:
-            emp = self.interface_service.hire_element.emp_list[self.interface_service.hire_element.emp_index]
+            emp = self.interface_service.hire_element.get_selected_emp()
             abilities = emp.get("abilities")
             name = emp.get("name")
+            salary = emp.get("salary")
             self.emp_name = self.font.render("Name: " + name, True, (255, 255, 255))
             self.stomach = self.font.render("Hunger: " + str(abilities[0]), True, (255, 255, 255))
             self.boredom = self.font.render("Boredom: " + str(abilities[1]), True, (255, 255, 255))
             self.anxiety = self.font.render("Anxiety: " + str(abilities[2]), True, (255, 255, 255))
-            self.salary = self.font.render("Salary: ", True, (255, 255, 255))
+            self.salary = self.font.render("Salary: " + str(salary), True, (255, 255, 255))
             self.experience = self.font.render("Experience: ", True, (255, 255, 255))  # could be shown by levels: low, medium, high
+        elif self.interface_service.view_type == self.interface_service.STATISTICS:
+            self.interface_service.statistics_element.update_text()
 
     def draw(self):
         for floor in range(0, len(self.building_controller.get_room_board())):
@@ -88,20 +88,30 @@ class Game:
 
         # draw different views based on which icon user clicked
         if self.interface_service.view_type == self.interface_service.HIRE_EMPLOYEE:
-            self.screen.blit(self.interface_service.hire_element.get_emp_image(), self.interface_service.hire_element.rect)
+            self.screen.blit(self.interface_service.hire_element.get_current_emp_image(), self.interface_service.hire_element.rect)
             self.screen.blit(self.emp_name, self.interface_service.hire_element.rect.move(70, 0))
             self.screen.blit(self.stomach, self.interface_service.hire_element.rect.move(70, 30))
             self.screen.blit(self.anxiety, self.interface_service.hire_element.rect.move(70, 60))
             self.screen.blit(self.boredom, self.interface_service.hire_element.rect.move(70, 90))
+            self.screen.blit(self.salary, self.interface_service.hire_element.rect.move(70, 120))
+        elif self.interface_service.view_type == self.interface_service.STATISTICS:
+            self.screen.blit(self.interface_service.statistics_element.get_stat_image(), self.interface_service.statistics_element.rect)
+            if self.interface_service.statistics_element.is_game_stats():
+                for i in range(0, len(self.interface_service.statistics_element.game_stat_list)):
+                    stat_text = self.interface_service.statistics_element.game_stat_list[i]
+                    stat_rect = self.interface_service.statistics_element.game_stat_rect.move(0,30*i)
+                    self.screen.blit(source=stat_text,
+                                     dest=stat_rect)
+
         elif self.interface_service.view_type == self.interface_service.PURCHASE_ROOM:
             self.screen.blit(self.interface_service.building_element.get_room_image(), self.interface_service.building_element.rect)
         elif self.interface_service.view_type == self.interface_service.CALENDAR:
             self.screen.blit(self.interface_service.calendar_element.image, self.interface_service.calendar_element.rect)
-            self.screen.blit(self.interface_service.calendar_element.page_images[self.interface_service.calendar_element.current_page],
+            self.screen.blit(self.interface_service.calendar_element.get_current_page_image(),
                              self.interface_service.calendar_element.page_rect)
             self.screen.blit(self.interface_service.calendar_element.get_month_text(),
                              self.interface_service.calendar_element.month_text_rect)
-            if self.interface_service.calendar_element.current_page == self.interface_service.calendar_element.page_marker_pos[2]:
+            if self.interface_service.calendar_element.at_current_page():
                 pygame.draw.rect(self.screen, (255, 0, 0), self.interface_service.calendar_element.page_marker_rect, 3)
 
         pygame.draw.line(self.screen, (0, 0, 0), (397, 55), self.interface_service.clock_element.clk_pointer, 5)
@@ -113,7 +123,7 @@ class Game:
         self.ground = Ground(self.screen)
         self.company = Company()
 
-        self.interface_service = InterfaceService()
+        self.interface_service = InterfaceService(self.company)
         self.building_controller = BuildingController()
         self.employee_controller = EmployeeController(self.building_controller.get_room_board(), self.ground, self.company,
                                                       self.interface_service)
@@ -138,8 +148,6 @@ class Game:
 
     def init_texts(self):
         self.font = pygame.font.SysFont("Calibri", 24, True)
-        self.paper_sold = self.font.render("Paper sold: ", True, (255, 255, 255))
-        self.money = self.font.render("Money: ", True, (255, 255, 255))
         self.text_rect = pygame.Rect(0, 0, 1, 1)
 
     def init_screen(self):

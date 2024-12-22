@@ -1,5 +1,6 @@
 from pygame import sprite, image, mask, mouse, Rect
 
+from model.Company import Company
 from model.Employee.Abilities import Abilities
 from model.Employee.Needs import Needs
 from model.Employee.SaleCalculator import SaleCalculator
@@ -9,21 +10,25 @@ from model.Furniture import Furniture
 
 class Employee(sprite.Sprite):
 
-    def __init__(self, x, y, name, company, abilities=None, images_path=None):
+    def __init__(self, x, y, name, company : Company, abilities=None, images_path=None, salary=None):
         sprite.Sprite.__init__(self)
         self.name = name
         self._abilities_tuple = abilities
-        if images_path != None:
+        self.images_path = images_path
+        self.images_path = "../resources/employees/male/emp1/"
+        self.salary = 1000
+        self.got_paid = False
+        if salary is not None:
+            self.salary = salary
+        if images_path is not None:
             self.images_path = images_path
-        else:
-            self.images_path = "../resources/employees/male/emp1/"
         self.current_position = -1
         self.current_drag_position = 2
-        self.company_observer = company
+        self._company_delegate = company
         self.init_sprite(x, y)
         self.init_data()
         self._calculator = SaleCalculator(self._needs, self._stats)
-        self.company_observer.update_emp_num()
+        self._company_delegate.update_emp_num()
         self.assigned_furniture = None
 
     def init_sprite(self, x, y):
@@ -105,6 +110,10 @@ class Employee(sprite.Sprite):
         self.destination_mem = None
         self.coord = (0, 0)  # x - room, y - floor
 
+    def get_paid(self):
+        self._company_delegate.money -= self.salary
+        self.got_paid = True
+
     def make_sale(self):
         sale = self._calculator.calculate_sale()
         self._stats.papers_sold += sale
@@ -120,7 +129,7 @@ class Employee(sprite.Sprite):
         return True
 
     def update_company(self, papers):
-        self.company_observer.update_papers(papers)
+        self._company_delegate.update_papers(papers)
 
     def clear_destination_mem(self):
         self.destination_mem = None
