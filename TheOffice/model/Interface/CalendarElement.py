@@ -23,6 +23,7 @@ class CalendarElement(InterfaceElement):
         self.marker_height = 36
         self.page_marker_rect = Rect(280 + self.page_marker_pos[0] * 31, 176 + self.page_marker_pos[1] * 35, self.marker_width,
                                      self.marker_height)
+        self._marker_offset_dict = {0: 4, 1: 5, 2: 0, 3: 3, 4: 6, 5: 0, 6: 4, 7: 0, 8: 2, 9: 5, 10: 0, 11: 1}
 
     def update(self):
         self.current_date += datetime.timedelta(1)
@@ -44,69 +45,26 @@ class CalendarElement(InterfaceElement):
         self.page_marker_rect_fixed_pos = (self.page_marker_rect_fixed_pos[0] + x, self.page_marker_rect_fixed_pos[1] + y)
 
     def get_marker_offset(self):
-        if self.current_page == 0:
-            return 4
-        elif self.current_page == 1:
-            return 5
-        elif self.current_page == 2:
-            return 0
-        elif self.current_page == 3:
-            return 3
-        elif self.current_page == 4:
-            return 6
-        elif self.current_page == 5:
-            return 0
-        elif self.current_page == 6:
-            return 4
-        elif self.current_page == 7:
-            return 0
-        elif self.current_page == 8:
-            return 2
-        elif self.current_page == 9:
-            return 5
-        elif self.current_page == 10:
-            return 0
-        elif self.current_page == 11:
-            return 1
+        return self._marker_offset_dict.get(self.current_page)
 
     def init_texts(self):
         font = pygame.font.SysFont("Calibri", 30, True)
         self.month_text_rect = pygame.Rect(260, 140, 100, 24)
-        self.text_january = font.render("January", True, 0)
-        self.text_february = font.render("February", True, 0)
-        self.text_march = font.render("March", True, 0)
-        self.text_april = font.render("April", True, 0)
-        self.text_may = font.render("May", True, 0)
-        self.text_june = font.render("June", True, 0)
-        self.text_july = font.render("July", True, 0)
-        self.text_august = font.render("August", True, 0)
-        self.text_september = font.render("September", True, 0)
-        self.text_october = font.render("October", True, 0)
-        self.text_november = font.render("November", True, 0)
-        self.text_december = font.render("December", True, 0 )
+        text_january = font.render("January", True, 0)
+        text_february = font.render("February", True, 0)
+        text_march = font.render("March", True, 0)
+        text_april = font.render("April", True, 0)
+        text_may = font.render("May", True, 0)
+        text_june = font.render("June", True, 0)
+        text_july = font.render("July", True, 0)
+        text_august = font.render("August", True, 0)
+        text_september = font.render("September", True, 0)
+        text_october = font.render("October", True, 0)
+        text_november = font.render("November", True, 0)
+        text_december = font.render("December", True, 0)
+        self._month_text_dict = {0: text_january, 1: text_february, 2: text_march, 3: text_april, 4: text_may,
+                                 5: text_june, 6: text_july, 7: text_august, 8: text_october, 9: text_september,
+                                 10: text_november, 11: text_december}
 
     def get_month_text(self):
-        if self.current_page == 0:
-            return self.text_january
-        elif self.current_page == 1:
-            return self.text_february
-        elif self.current_page == 2:
-            return self.text_march
-        elif self.current_page == 3:
-            return self.text_april
-        elif self.current_page == 4:
-            return self.text_may
-        elif self.current_page == 5:
-            return self.text_june
-        elif self.current_page == 6:
-            return self.text_july
-        elif self.current_page == 7:
-            return self.text_august
-        elif self.current_page == 8:
-            return self.text_september
-        elif self.current_page == 9:
-            return self.text_october
-        elif self.current_page == 10:
-            return self.text_november
-        else:
-            return self.text_december
+        return self._month_text_dict.get(self.current_page)
