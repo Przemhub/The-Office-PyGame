@@ -12,7 +12,7 @@ from service.RoomType import RoomType
 
 class InterfaceService:
     def __init__(self):
-        self.time_dist = 1800
+        self.time_dist = 1
         self.timestamp = time.get_ticks()
         self.calendar_element = CalendarElement(Rect(260, 170, 283, 192),
                                                 image.load("../resources/interface/elements/calendar/calendar.png"))

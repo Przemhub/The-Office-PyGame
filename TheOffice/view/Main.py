@@ -47,9 +47,6 @@ class Game:
             "Paper sold: " + str(self.company.papers_sold), True,
             (255, 255, 255))
         self.money = self.font.render("Money: " + str(self.company.money), True, (255, 255, 255))
-        self.hunger = self.font.render(
-            "Hunger: " + str(self.employee_controller.employee_service.employee_list[0]._needs.hunger), True,
-            (255, 255, 255))
         self.stress = self.font.render(
             "Stress: " + str(self.employee_controller.employee_service.employee_list[0]._needs.stress), True,
             (255, 255, 255))
@@ -58,6 +55,16 @@ class Game:
             "Motivation: " + str(self.employee_controller.employee_service.employee_list[0]._needs.motivation), True,
             (255, 255, 255))
         self.clock_time = self.font.render("Time: " + self.interface_service.get_clock_progress_str(), True, (255, 255, 255))
+        if self.interface_service.view_type == self.interface_service.HIRE_EMPLOYEE:
+            emp = self.interface_service.hire_element.emp_list[self.interface_service.hire_element.emp_index]
+            abilities = emp.get("abilities")
+            name = emp.get("name")
+            self.emp_name = self.font.render("Name: " + name, True, (255, 255, 255))
+            self.stomach = self.font.render("Hunger: " + str(abilities[0]), True, (255, 255, 255))
+            self.boredom = self.font.render("Boredom: " + str(abilities[1]), True, (255, 255, 255))
+            self.anxiety = self.font.render("Anxiety: " + str(abilities[2]), True, (255, 255, 255))
+            self.salary = self.font.render("Salary: ", True, (255, 255, 255))
+            self.experience = self.font.render("Experience: ", True, (255, 255, 255))  # could be shown by levels: low, medium, high
 
     def draw(self):
         for floor in range(0, len(self.building_controller.get_room_board())):
@@ -82,13 +89,20 @@ class Game:
         # draw different views based on which icon user clicked
         if self.interface_service.view_type == self.interface_service.HIRE_EMPLOYEE:
             self.screen.blit(self.interface_service.hire_element.get_emp_image(), self.interface_service.hire_element.rect)
+            self.screen.blit(self.emp_name, self.interface_service.hire_element.rect.move(70, 0))
+            self.screen.blit(self.stomach, self.interface_service.hire_element.rect.move(70, 30))
+            self.screen.blit(self.anxiety, self.interface_service.hire_element.rect.move(70, 60))
+            self.screen.blit(self.boredom, self.interface_service.hire_element.rect.move(70, 90))
         elif self.interface_service.view_type == self.interface_service.PURCHASE_ROOM:
             self.screen.blit(self.interface_service.building_element.get_room_image(), self.interface_service.building_element.rect)
         elif self.interface_service.view_type == self.interface_service.CALENDAR:
             self.screen.blit(self.interface_service.calendar_element.image, self.interface_service.calendar_element.rect)
             self.screen.blit(self.interface_service.calendar_element.page_images[self.interface_service.calendar_element.current_page],
                              self.interface_service.calendar_element.page_rect)
-            pygame.draw.rect(self.screen, (255, 0, 0), self.interface_service.calendar_element.page_marker_rect, 3)
+            self.screen.blit(self.interface_service.calendar_element.get_month_text(),
+                             self.interface_service.calendar_element.month_text_rect)
+            if self.interface_service.calendar_element.current_page == self.interface_service.calendar_element.page_marker_pos[2]:
+                pygame.draw.rect(self.screen, (255, 0, 0), self.interface_service.calendar_element.page_marker_rect, 3)
 
         pygame.draw.line(self.screen, (0, 0, 0), (397, 55), self.interface_service.clock_element.clk_pointer, 5)
         # self.screen.blit(self.hunger, self.text_rect.move(0, 125))
