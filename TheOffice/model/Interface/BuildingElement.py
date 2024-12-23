@@ -17,7 +17,7 @@ class BuildingElement(InterfaceElement):
         self._room_cost_dict = {RoomType.OFFICE_ROOM: 1500, RoomType.DINING_ROOM: 1000, RoomType.GAME_ROOM: 1250,
                                 RoomType.CONFERENCE_ROOM: 1000}
         self._room_index = 0
-        self.background_surface = Surface((220, 220))
+        self.background_surface = Surface((260, 220))
         self.background_surface.set_alpha(180)
         self.background_surface.fill((0, 0, 0))
 

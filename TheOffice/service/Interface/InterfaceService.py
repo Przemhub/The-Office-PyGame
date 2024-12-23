@@ -13,13 +13,13 @@ from service.RoomType import RoomType
 
 class InterfaceService:
     def __init__(self, company):
-        self._time_dist = 1
+        self._time_dist = 1800
         self._timestamp = time.get_ticks()
         self.calendar_element = CalendarElement(Rect(250, 170, 283, 192),
                                                 image.load("../resources/interface/elements/calendar/calendar.png"))
         self.clock_element = ClockElement(Rect(20, 0, 1, 45), image.load("../resources/interface/elements/clock.png"))
         self.building_element = BuildingElement(Rect(300, 170, 283, 192), image.load("../resources/rooms/office.png"), company)
-        self.hire_element = HireElement(Rect(280, 170, 60, 140), image.load("../resources/employees/male/emp1/employee.png"))
+        self.hire_element = HireElement(Rect(290, 200, 60, 140), image.load("../resources/employees/male/emp1/employee.png"))
         self.statistics_element = StatisticsElement(Rect(250, 170, 283, 192),
                                                     image.load("../resources/interface/elements/statistics/game_stats.png"), company)
 

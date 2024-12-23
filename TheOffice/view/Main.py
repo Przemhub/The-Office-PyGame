@@ -104,7 +104,7 @@ class Game:
                                      self.interface_service.statistics_element.game_stat_rect.move(0, 30 * i))
 
         elif self.interface_service.view_type == self.interface_service.PURCHASE_ROOM:
-            self.screen.blit(self.interface_service.building_element.background_surface,self.interface_service.building_element.rect.move(-10,-10))
+            self.screen.blit(self.interface_service.building_element.background_surface,self.interface_service.building_element.rect.move(-30,-10))
             self.screen.blit(self.interface_service.building_element.get_room_image(), self.interface_service.building_element.rect)
         elif self.interface_service.view_type == self.interface_service.CALENDAR:
             self.screen.blit(self.interface_service.calendar_element.image, self.interface_service.calendar_element.rect)
@@ -124,6 +124,7 @@ class Game:
     def init_objects(self):
         self.ground = Ground(self.screen)
         self.company = Company()
+        self.company.money = 0
 
         self.interface_service = InterfaceService(self.company)
         self.building_controller = BuildingController()

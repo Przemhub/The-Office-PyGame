@@ -7,10 +7,10 @@ class HireElement(InterfaceElement):
     def __init__(self, rect, img):
         super().__init__(rect, img)
         self._emp_list = [
-            {"name": "Bob", "abilities": (6, 6, 6), "images_path": "../resources/employees/male/emp1/", "salary" : 1200},
-            {"name": "Steve", "abilities": (6, 4, 7), "images_path": "../resources/employees/male/emp2/", "salary" : 1000},
-            {"name": "Joe", "abilities": (4, 6, 8), "images_path": "../resources/employees/male/emp3/", "salary": 800},
-            {"name": "Marle", "abilities": (8, 7, 4), "images_path": "../resources/employees/female/emp1/", "salary" : 1100},
+            {"name": "Bob", "abilities": (6, 6, 6), "images_path": "../resources/employees/male/emp1/", "salary" : 2500},
+            {"name": "Steve", "abilities": (6, 4, 7), "images_path": "../resources/employees/male/emp2/", "salary" : 2450},
+            {"name": "Joe", "abilities": (4, 6, 8), "images_path": "../resources/employees/male/emp3/", "salary": 2400},
+            {"name": "Marle", "abilities": (8, 7, 4), "images_path": "../resources/employees/female/emp1/", "salary" : 2550},
         ]
         self._emp_index = 0
         self.background_surface = Surface((240,190))
