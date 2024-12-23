@@ -88,6 +88,8 @@ class Game:
 
         # draw different views based on which icon user clicked
         if self.interface_service.view_type == self.interface_service.HIRE_EMPLOYEE:
+            self.screen.blit(self.interface_service.hire_element.background_surface,
+                             self.interface_service.hire_element.rect.move(-20, -20))
             self.screen.blit(self.interface_service.hire_element.get_current_emp_image(), self.interface_service.hire_element.rect)
             self.screen.blit(self.emp_name, self.interface_service.hire_element.rect.move(70, 0))
             self.screen.blit(self.stomach, self.interface_service.hire_element.rect.move(70, 30))
@@ -98,17 +100,17 @@ class Game:
             self.screen.blit(self.interface_service.statistics_element.get_stat_image(), self.interface_service.statistics_element.rect)
             if self.interface_service.statistics_element.is_game_stats():
                 for i in range(0, len(self.interface_service.statistics_element.game_stat_list)):
-                    stat_text = self.interface_service.statistics_element.game_stat_list[i]
-                    stat_rect = self.interface_service.statistics_element.game_stat_rect.move(0,30*i)
-                    self.screen.blit(source=stat_text,
-                                     dest=stat_rect)
+                    self.screen.blit(self.interface_service.statistics_element.game_stat_list[i],
+                                     self.interface_service.statistics_element.game_stat_rect.move(0, 30 * i))
 
         elif self.interface_service.view_type == self.interface_service.PURCHASE_ROOM:
+            self.screen.blit(self.interface_service.building_element.background_surface,self.interface_service.building_element.rect.move(-10,-10))
             self.screen.blit(self.interface_service.building_element.get_room_image(), self.interface_service.building_element.rect)
         elif self.interface_service.view_type == self.interface_service.CALENDAR:
             self.screen.blit(self.interface_service.calendar_element.image, self.interface_service.calendar_element.rect)
             self.screen.blit(self.interface_service.calendar_element.get_current_page_image(),
                              self.interface_service.calendar_element.page_rect)
+            self.screen.blit(self.interface_service.calendar_element.text_background,self.interface_service.calendar_element.month_text_rect.move(-5,-5))
             self.screen.blit(self.interface_service.calendar_element.get_month_text(),
                              self.interface_service.calendar_element.month_text_rect)
             if self.interface_service.calendar_element.at_current_page():

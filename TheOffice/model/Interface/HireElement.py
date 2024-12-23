@@ -1,4 +1,4 @@
-from pygame import transform, image
+from pygame import transform, image, Surface
 
 from model.Interface.InterfaceElement import InterfaceElement
 
@@ -13,6 +13,9 @@ class HireElement(InterfaceElement):
             {"name": "Marle", "abilities": (8, 7, 4), "images_path": "../resources/employees/female/emp1/", "salary" : 1100},
         ]
         self._emp_index = 0
+        self.background_surface = Surface((240,190))
+        self.background_surface.set_alpha(150)
+        self.background_surface.fill((0,0,0))
 
     def get_current_emp_image(self):
         return transform.scale(image.load(self._emp_list[self._emp_index].get("images_path") + "employee.png"), (60, 140))

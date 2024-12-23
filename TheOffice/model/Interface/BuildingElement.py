@@ -1,4 +1,4 @@
-from pygame import image, transform
+from pygame import image, transform, Surface
 
 from model.Interface.InterfaceElement import InterfaceElement
 from service.RoomType import RoomType
@@ -9,14 +9,17 @@ class BuildingElement(InterfaceElement):
         super().__init__(rect, img)
         self._company = company
         self._room_image_list = [
-            transform.scale(image.load("../resources/rooms/office.png"), (220, 220)),
-            transform.scale(image.load("../resources/rooms/dining_room.png"), (220, 220)),
-            transform.scale(image.load("../resources/rooms/game_room.png"), (220, 220)),
-            transform.scale(image.load("../resources/rooms/conference_room.png"), (220, 220)),
+            transform.scale(image.load("../resources/rooms/office.png"), (200, 200)),
+            transform.scale(image.load("../resources/rooms/dining_room.png"), (200, 200)),
+            transform.scale(image.load("../resources/rooms/game_room.png"), (200, 200)),
+            transform.scale(image.load("../resources/rooms/conference_room.png"), (200, 200)),
         ]
         self._room_cost_dict = {RoomType.OFFICE_ROOM: 1500, RoomType.DINING_ROOM: 1000, RoomType.GAME_ROOM: 1250,
                                 RoomType.CONFERENCE_ROOM: 1000}
         self._room_index = 0
+        self.background_surface = Surface((220, 220))
+        self.background_surface.set_alpha(180)
+        self.background_surface.fill((0, 0, 0))
 
     def get_room_image(self):
         return self._room_image_list[self._room_index]

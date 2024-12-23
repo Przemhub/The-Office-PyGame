@@ -2,7 +2,7 @@ import datetime
 from os import listdir
 
 import pygame.image
-from pygame import font, Rect
+from pygame import font, Rect, Surface
 
 from model.Interface.InterfaceElement import InterfaceElement
 
@@ -53,9 +53,14 @@ class CalendarElement(InterfaceElement):
     def init_texts(self):
         sysfont = font.SysFont("Calibri", 30, True)
         self.month_text_rect = Rect(260, 140, 100, 24)
-        self._month_text_dict = {0: sysfont.render("January", True, 0), 1: sysfont.render("February", True, 0), 2: sysfont.render("March", True, 0),
+        self.text_background = Surface((self.month_text_rect.width + 45, self.month_text_rect.height + 10))
+        self.text_background.set_alpha(200)
+        self.text_background.fill((255, 255, 255))
+        self._month_text_dict = {0: sysfont.render("January", True, 0), 1: sysfont.render("February", True, 0),
+                                 2: sysfont.render("March", True, 0),
                                  3: sysfont.render("April", True, 0), 4: sysfont.render("May", True, 0),
-                                 5: sysfont.render("June", True, 0), 6: sysfont.render("July", True, 0), 7: sysfont.render("August", True, 0),
+                                 5: sysfont.render("June", True, 0), 6: sysfont.render("July", True, 0),
+                                 7: sysfont.render("August", True, 0),
                                  8: sysfont.render("September", True, 0), 9: sysfont.render("October", True, 0),
                                  10: sysfont.render("November", True, 0), 11: sysfont.render("December", True, 0)}
 
