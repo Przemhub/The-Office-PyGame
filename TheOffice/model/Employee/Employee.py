@@ -1,5 +1,6 @@
 from pygame import sprite, image, mask, mouse, Rect
 
+from model.Company import Company
 from model.Employee.Abilities import Abilities
 from model.Employee.Needs import Needs
 from model.Employee.SaleCalculator import SaleCalculator
@@ -9,16 +10,25 @@ from model.Furniture import Furniture
 
 class Employee(sprite.Sprite):
 
-    def __init__(self, x, y, name, company):
+    def __init__(self, x, y, name, company : Company, abilities=None, images_path=None, salary=None):
         sprite.Sprite.__init__(self)
         self.name = name
+        self._abilities_tuple = abilities
+        self.images_path = images_path
+        self.images_path = "../resources/employees/male/emp1/"
+        self.salary = 1000
+        self.got_paid = False
+        if salary is not None:
+            self.salary = salary
+        if images_path is not None:
+            self.images_path = images_path
         self.current_position = -1
         self.current_drag_position = 2
-        self.company_observer = company
+        self._company_delegate = company
         self.init_sprite(x, y)
         self.init_data()
         self._calculator = SaleCalculator(self._needs, self._stats)
-        self.company_observer.update_emp_num()
+        self._company_delegate.update_emp_num()
         self.assigned_furniture = None
 
     def init_sprite(self, x, y):
@@ -67,12 +77,12 @@ class Employee(sprite.Sprite):
             "employee_shake2.png",
             "employee_shake3.png"
         ]
-        self.falling_image = image.load("../resources/employees/employee_fall.png")
-        self.image = image.load("../resources/employees/employee.png")
-        self.walk_images = [image.load("../resources/employees/" + img_name) for img_name in walk_img_names]
-        self.drag_images = [image.load("../resources/employees/" + img_name) for img_name in drag_img_names]
-        self.sit_images = [image.load("../resources/employees/" + img_name) for img_name in sit_img_names]
-        self.shake_images = [image.load("../resources/employees/" + img_name) for img_name in shake_img_names]
+        self.falling_image = image.load(self.images_path + "employee_fall.png")
+        self.image = image.load(self.images_path + "employee.png")
+        self.walk_images = [image.load(self.images_path + img_name) for img_name in walk_img_names]
+        self.drag_images = [image.load(self.images_path + img_name) for img_name in drag_img_names]
+        self.sit_images = [image.load(self.images_path + img_name) for img_name in sit_img_names]
+        self.shake_images = [image.load(self.images_path + img_name) for img_name in shake_img_names]
         self.mask = mask.from_surface(self.image)
         self.rect = Rect(x, y, self.image.get_width(), self.image.get_height())
 
@@ -86,16 +96,23 @@ class Employee(sprite.Sprite):
         if self.assigned_furniture is not None:
             self.assigned_furniture.taken = False
         self.assigned_furniture = None
-        self.image = image.load("../resources/employees/employee.png")
+        self.image = image.load(self.images_path + "/employee.png")
 
     def init_data(self):
         self._stats = Statistics()
         self._needs = Needs()
-        self._abilities = Abilities()
+        if self._abilities_tuple != None:
+            self._abilities = Abilities(self._abilities_tuple[0], self._abilities_tuple[1], self._abilities_tuple[2])
+        else:
+            self._abilities = Abilities()
         self.direction = ''
         self.destination = None
         self.destination_mem = None
         self.coord = (0, 0)  # x - room, y - floor
+
+    def get_paid(self):
+        self._company_delegate.money -= self.salary
+        self.got_paid = True
 
     def make_sale(self):
         sale = self._calculator.calculate_sale()
@@ -112,7 +129,7 @@ class Employee(sprite.Sprite):
         return True
 
     def update_company(self, papers):
-        self.company_observer.update_papers(papers)
+        self._company_delegate.update_papers(papers)
 
     def clear_destination_mem(self):
         self.destination_mem = None

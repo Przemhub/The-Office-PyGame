@@ -2,15 +2,15 @@ import math
 
 from pygame import image, Rect
 
-from model.Interface.InterfaceElement import InterfaceElement
+from model.Interface.StaticElement import StaticElement
 
 
-class ClockElement(InterfaceElement):
-    def __init__(self):
-        super().__init__(Rect(20, 0, 1, 45), image.load("../resources/interface/top.png"))
+class ClockElement(StaticElement):
+    def __init__(self, rect, image):
+        super().__init__(rect, image)
         self.clk_pointer = (397, 15)
         self._radius = 35
-        self.progress = 95
+        self.progress = 0
 
     def tick(self):
         self.progress = (self.progress + 1) % 100

@@ -17,8 +17,7 @@ class KeyboardController:
     def execute_event(self, e):
         if e.type == pygame.KEYDOWN:
             if e.key is pygame.K_q:
-                print("pressed")
-                self.employee_controller.create_employee(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], self.company)
+                self.employee_controller.create_employee(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1])
             elif e.key is pygame.K_1:
                 self.cursor.set_cursor_object(RoomType.OFFICE_ROOM)
             elif e.key is pygame.K_2:

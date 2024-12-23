@@ -31,5 +31,6 @@ class CursorObject:
         self.images_list = [
             image.load("../resources/rooms/office.png"),
             image.load("../resources/rooms/dining_room.png"),
-            image.load("../resources/rooms/game_room.png")
+            image.load("../resources/rooms/game_room.png"),
+            image.load("../resources/rooms/conference_room.png")
         ]
