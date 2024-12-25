@@ -29,11 +29,11 @@ class EmployeeNeedThread(Thread):
                 for employee in self.emp_dict.values():
                     if need_i <= 1:
                         if employee.is_working():
-                            employee._needs.decrease_stress()
+                            employee.needs.decrease_stress()
                     if need_i == 1:
-                        employee._needs.decrease_hunger()
+                        employee.needs.decrease_hunger()
                     elif need_i == 2:
-                        employee._needs.decrease_motivation()
+                        employee.needs.decrease_motivation()
                         need_i = 0
                 need_i += 1
                 time.wait(7000)

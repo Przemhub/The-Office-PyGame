@@ -27,7 +27,7 @@ class Employee(sprite.Sprite):
         self._company_delegate = company
         self.init_sprite(x, y)
         self.init_data()
-        self._calculator = SaleCalculator(self._needs, self._stats)
+        self._calculator = SaleCalculator(self.needs, self.stats)
         self._company_delegate.update_emp_num()
         self.assigned_furniture = None
 
@@ -99,8 +99,8 @@ class Employee(sprite.Sprite):
         self.image = image.load(self.images_path + "/employee.png")
 
     def init_data(self):
-        self._stats = Statistics()
-        self._needs = Needs()
+        self.stats = Statistics()
+        self.needs = Needs()
         if self._abilities_tuple != None:
             self._abilities = Abilities(self._abilities_tuple[0], self._abilities_tuple[1], self._abilities_tuple[2])
         else:
@@ -116,7 +116,7 @@ class Employee(sprite.Sprite):
 
     def make_sale(self):
         sale = self._calculator.calculate_sale()
-        self._stats.papers_sold += sale
+        self.stats.papers_sold += sale
         self.update_company(sale)
 
     def can_work(self):
@@ -150,24 +150,24 @@ class Employee(sprite.Sprite):
         return type(self.assigned_furniture).__name__ == "ConferenceChair" and not self.is_motivated()
 
     def is_satiated(self):
-        return self._needs.hunger > 99
+        return self.needs.hunger > 99
 
     def is_relaxed(self):
-        return self._needs.stress > 99
+        return self.needs.stress > 99
 
     def is_motivated(self):
-        return self._needs.motivation > 99
+        return self.needs.motivation > 99
 
     def is_hungry(self):
-        return self._needs.hunger <= self._abilities.stomach
+        return self.needs.hunger <= self._abilities.stomach
 
     def is_stressed(self):
-        return self._needs.stress <= self._abilities.anxiety
+        return self.needs.stress <= self._abilities.anxiety
 
     def is_unmotivated(self):
-        return self._needs.motivation <= self._abilities.boredom
+        return self.needs.motivation <= self._abilities.boredom
 
-    def is_dragged(self):
+    def is_collide_with_mouse(self):
         return self.rect.collidepoint(mouse.get_pos())
 
     def is_sitting_on(self, furniture):

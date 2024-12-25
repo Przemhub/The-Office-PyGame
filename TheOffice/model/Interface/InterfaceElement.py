@@ -13,6 +13,7 @@ class InterfaceElement:
         self._on_hover = on_hover
         self.NO_EFFECT = 0
         self.DROP_SHADOW = 1
+        self.SHOW_STATISTICS = 2
         self.hover_effect = self.NO_EFFECT
 
     def click(self):

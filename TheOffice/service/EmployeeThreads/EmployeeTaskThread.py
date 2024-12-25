@@ -49,11 +49,11 @@ class EmployeeTaskThread(Thread):
                 for employee in self.work_dict.values():
                     employee.make_sale()
                 for employee in self.hunger_dict.values():
-                    employee._needs.eat()
+                    employee.needs.eat()
                 for employee in self.stress_dict.values():
-                    employee._needs.play()
+                    employee.needs.play()
                 for employee in self.motivation_dict.values():
-                    employee._needs.meet()
+                    employee.needs.meet()
                 time.wait(4000)
 
     def destroy(self):

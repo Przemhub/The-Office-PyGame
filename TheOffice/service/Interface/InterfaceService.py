@@ -4,6 +4,7 @@ from pygame.rect import Rect
 from model.Interface.BuildingElement import BuildingElement
 from model.Interface.CalendarElement import CalendarElement
 from model.Interface.ClockElement import ClockElement
+from model.Interface.EmployeeStatElement import EmployeeStatElement
 from model.Interface.HireElement import HireElement
 from model.Interface.InterfaceElement import InterfaceElement
 from model.Interface.StaticElement import StaticElement
@@ -18,18 +19,19 @@ class InterfaceService:
         self.calendar_element = CalendarElement(Rect(250, 170, 283, 192),
                                                 image.load("../resources/interface/elements/calendar/calendar.png"))
         self.clock_element = ClockElement(Rect(20, 0, 1, 45), image.load("../resources/interface/elements/clock.png"))
-        self.building_element = BuildingElement(Rect(300, 170, 283, 192), image.load("../resources/rooms/office.png"), company)
-        self.hire_element = HireElement(Rect(290, 200, 60, 140), image.load("../resources/employees/male/emp1/employee.png"))
+        self.building_element = BuildingElement(Rect(250, 170, 283, 192), image.load("../resources/rooms/office.png"), company)
+        self.hire_element = HireElement(Rect(290, 200, 60, 140), image.load("../resources/employees/male/emp1/employee.png"), company)
         self.statistics_element = StatisticsElement(Rect(250, 170, 283, 192),
                                                     image.load("../resources/interface/elements/statistics/game_stats.png"), company)
+        self.emp_stat_element = EmployeeStatElement(Rect(0,0,0,0), None)
 
         self.arrow_right_element = InterfaceElement(Rect(570, 170, 100, 170), image.load("../resources/interface/elements/right.png"),
                                                     self.switch_view_right, self.drop_shadow)
         self.arrow_left_element = InterfaceElement(Rect(120, 170, 100, 170), image.load("../resources/interface/elements/left.png"),
                                                    self.switch_view_left, self.drop_shadow)
-        self.accept_element = InterfaceElement(Rect(300, 400, 90, 90), image.load("../resources/interface/icons/accept.png"),
+        self.accept_element = InterfaceElement(Rect(290, 395, 90, 90), image.load("../resources/interface/icons/accept.png"),
                                                self.click_accept, self.drop_shadow)
-        self.reject_element = InterfaceElement(Rect(420, 400, 80, 80), image.load("../resources/interface/icons/reject.png"),
+        self.reject_element = InterfaceElement(Rect(410, 400, 80, 80), image.load("../resources/interface/icons/reject.png"),
                                                self.click_reject, self.drop_shadow)
         self.calendar_icon = StaticElement(Rect(220, 8, 75, 60), image.load("../resources/interface/icons/calendar.png"),
                                            self.click_calendar, self.drop_shadow)
@@ -90,6 +92,8 @@ class InterfaceService:
         if self.view_type == self.PURCHASE_ROOM:
             if self.building_element.room_purchased():
                 self.purchased_room = self.building_element._room_index
+            else:
+                return
         elif self.view_type == self.HIRE_EMPLOYEE:
             self.hired_emp = self.hire_element.get_selected_emp()
         self.view_type = self.NO_TYPE
