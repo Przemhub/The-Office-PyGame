@@ -47,19 +47,6 @@ class MouseController:
         self.building_controller.build_room(self.board_pos, self.cursor.object_id)
         self.cursor.clear_cursor()
 
-    def move_objects(self, x, y):
-        for emp in self.emp_list:
-            emp.rect = emp.rect.move(x, y)
-        # for each action object in each room in each floor move them according to camera position
-        for floor in self.room_board:
-            for room in floor:
-                room.rect = room.rect.move(x, y)
-                for a_obj in room.action_objects:
-                    a_obj.rect = a_obj.rect.move(x, y)
-        for corridor in self.corridors:
-            corridor.rect = corridor.rect.move(x, y)
-        self.ground.move(y)
-
     def execute_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.cursor.drags_room():
@@ -69,13 +56,19 @@ class MouseController:
                     element.click()
             if self.interface_service.purchased_room != RoomType.NONE:
                 self.cursor.set_cursor_object(self.interface_service.purchased_room)
-                self.interface_service.purchased_room  = RoomType.NONE
+                self.interface_service.purchased_room = RoomType.NONE
+            if self.interface_service.purchased_room == RoomType.NEW_FLOOR:
+                self.building_controller.build_floor()
+                self.interface_service.purchased_room = RoomType.NONE
+                return
         self.hover_event()
 
     def hover_event(self):
         for element in self.interface_service.element_list:
+            element.hover_effect = element.NO_EFFECT
             if self.cursor.collides_with(element.rect):
                 element.hover(element)
-            else:
-                element.hover_effect = element.NO_EFFECT
-
+        self.interface_service.emp_stat_element.hover_effect = self.interface_service.emp_stat_element.NO_EFFECT
+        for emp in self.emp_list:
+            if emp.is_collide_with_mouse():
+                self.interface_service.emp_stat_element.update_emp_stats(emp)

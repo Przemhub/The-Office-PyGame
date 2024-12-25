@@ -6,6 +6,7 @@ class BuildingController:
     def __init__(self):
         self.building_service = BuildingService()
 
+    # board_pos = (room, floor)
     def build_room(self, board_pos, room_type: int):
         if room_type == RoomType.OFFICE_ROOM:
             self.building_service.build_office(board_pos)

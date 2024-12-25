@@ -45,11 +45,11 @@ class Game:
 
     def update_text(self):
         self.stress = self.font.render(
-            "Stress: " + str(self.employee_controller.employee_service.employee_list[0]._needs.stress), True,
+            "Stress: " + str(self.employee_controller.employee_service.employee_list[0].needs.stress), True,
             (255, 255, 255))
 
         self.motivation = self.font.render(
-            "Motivation: " + str(self.employee_controller.employee_service.employee_list[0]._needs.motivation), True,
+            "Motivation: " + str(self.employee_controller.employee_service.employee_list[0].needs.motivation), True,
             (255, 255, 255))
         self.clock_time = self.font.render("Time: " + self.interface_service.get_clock_progress_str(), True, (255, 255, 255))
         if self.interface_service.view_type == self.interface_service.HIRE_EMPLOYEE:
@@ -86,29 +86,50 @@ class Game:
                     self.screen.blit(element.hover_surface, element.rect)
                 self.screen.blit(element.image, element.rect)
 
+        if self.interface_service.emp_stat_element.hover_effect == self.interface_service.emp_stat_element.SHOW_STATISTICS:
+            self.screen.blit(self.interface_service.emp_stat_element.background_surface, self.interface_service.emp_stat_element.rect)
+            self.screen.blit(self.interface_service.emp_stat_element.hunger_text, self.interface_service.emp_stat_element.rect.move(10, 10))
+            self.screen.blit(self.interface_service.emp_stat_element.stress_text, self.interface_service.emp_stat_element.rect.move(10, 30))
+            self.screen.blit(self.interface_service.emp_stat_element.motivation_text,
+                             self.interface_service.emp_stat_element.rect.move(10, 50))
+            self.screen.blit(self.interface_service.emp_stat_element.sales_text, self.interface_service.emp_stat_element.rect.move(10, 70))
+            self.screen.blit(self.interface_service.emp_stat_element.hunger_bar, self.interface_service.emp_stat_element.rect.move(110, 15))
+            self.screen.blit(self.interface_service.emp_stat_element.stress_bar, self.interface_service.emp_stat_element.rect.move(110, 35))
+            self.screen.blit(self.interface_service.emp_stat_element.motivation_bar,
+                             self.interface_service.emp_stat_element.rect.move(110, 55))
+            self.screen.blit(self.interface_service.emp_stat_element.sales_number_text,
+                             self.interface_service.emp_stat_element.rect.move(120, 70))
+
         # draw different views based on which icon user clicked
         if self.interface_service.view_type == self.interface_service.HIRE_EMPLOYEE:
+            self.screen.blit(self.interface_service.hire_element.background_surface,
+                             self.interface_service.hire_element.rect.move(-20, -20))
             self.screen.blit(self.interface_service.hire_element.get_current_emp_image(), self.interface_service.hire_element.rect)
             self.screen.blit(self.emp_name, self.interface_service.hire_element.rect.move(70, 0))
             self.screen.blit(self.stomach, self.interface_service.hire_element.rect.move(70, 30))
             self.screen.blit(self.anxiety, self.interface_service.hire_element.rect.move(70, 60))
             self.screen.blit(self.boredom, self.interface_service.hire_element.rect.move(70, 90))
             self.screen.blit(self.salary, self.interface_service.hire_element.rect.move(70, 120))
+            self.screen.blit(self.interface_service.hire_element.get_capital_text(),self.interface_service.hire_element.capital_rect)
         elif self.interface_service.view_type == self.interface_service.STATISTICS:
             self.screen.blit(self.interface_service.statistics_element.get_stat_image(), self.interface_service.statistics_element.rect)
             if self.interface_service.statistics_element.is_game_stats():
                 for i in range(0, len(self.interface_service.statistics_element.game_stat_list)):
-                    stat_text = self.interface_service.statistics_element.game_stat_list[i]
-                    stat_rect = self.interface_service.statistics_element.game_stat_rect.move(0,30*i)
-                    self.screen.blit(source=stat_text,
-                                     dest=stat_rect)
-
+                    self.screen.blit(self.interface_service.statistics_element.game_stat_list[i],
+                                     self.interface_service.statistics_element.game_stat_rect.move(0, 30 * i))
         elif self.interface_service.view_type == self.interface_service.PURCHASE_ROOM:
+            self.screen.blit(self.interface_service.building_element.background_surface,
+                             self.interface_service.building_element.rect.move(-20, -10))
+            self.screen.blit(self.interface_service.building_element.cost_number_text,
+                             self.interface_service.building_element.cost_rect)
             self.screen.blit(self.interface_service.building_element.get_room_image(), self.interface_service.building_element.rect)
+            self.screen.blit(self.interface_service.building_element.get_capital_text(), self.interface_service.building_element.capital_rect)
         elif self.interface_service.view_type == self.interface_service.CALENDAR:
             self.screen.blit(self.interface_service.calendar_element.image, self.interface_service.calendar_element.rect)
             self.screen.blit(self.interface_service.calendar_element.get_current_page_image(),
                              self.interface_service.calendar_element.page_rect)
+            self.screen.blit(self.interface_service.calendar_element.text_background,
+                             self.interface_service.calendar_element.month_text_rect.move(-5, -5))
             self.screen.blit(self.interface_service.calendar_element.get_month_text(),
                              self.interface_service.calendar_element.month_text_rect)
             if self.interface_service.calendar_element.at_current_page():
@@ -122,14 +143,12 @@ class Game:
     def init_objects(self):
         self.ground = Ground(self.screen)
         self.company = Company()
+        self.company.money = 20000
 
         self.interface_service = InterfaceService(self.company)
         self.building_controller = BuildingController()
         self.employee_controller = EmployeeController(self.building_controller.get_room_board(), self.ground, self.company,
                                                       self.interface_service)
-        self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
-                                                self.building_controller, self.ground, self.interface_service)
-        self.keyboard_controller = KeyboardController(self.employee_controller, self.mouse_controller, self.company)
 
         self.employee_controller.create_employee(100, 200)
         self.building_controller.build_room((0, 0), RoomType.CORRIDOR)
@@ -140,11 +159,16 @@ class Game:
         self.building_controller.build_room((5, 0), RoomType.CONFERENCE_ROOM)
         self.building_controller.build_room((6, 0), RoomType.CORRIDOR)
 
+        self.mouse_controller = MouseController(self.screen, self.employee_controller.employee_service.employee_list,
+                                                self.building_controller, self.ground, self.interface_service)
+        self.keyboard_controller = KeyboardController(self.employee_controller, self.building_controller, self.mouse_controller.cursor,
+                                                      self.company, self.ground)
+
         self.first_room = self.building_controller.building_service.room_board[0][0]
 
         # self.employee_controller.create_employee(120, 280, "Bob2", self._company)
-        self.employee_controller.employee_service.employee_list[0]._needs.hunger = 20
-        self.employee_controller.employee_service.employee_list[0]._needs.stress = 20
+        self.employee_controller.employee_service.employee_list[0].needs.hunger = 20
+        self.employee_controller.employee_service.employee_list[0].needs.stress = 20
 
     def init_texts(self):
         self.font = pygame.font.SysFont("Calibri", 24, True)

@@ -31,12 +31,13 @@ class EmployeeManagementService:
         if emp.destination is None:
             # the moment when employee starts feeling hungry
             if emp.is_hungry():
-                self.task_service_t.pop_emp(emp, "work")
-                self.task_service_t.pop_emp(emp, "stress")
-                self.task_service_t.pop_emp(emp, "motivation")
-                self.dest_service.search_for_room(emp, "DiningRoom")
+                if (not emp.is_playing() and not emp.is_eating()) or emp.is_relaxed():
+                    self.task_service_t.pop_emp(emp, "work")
+                    self.task_service_t.pop_emp(emp, "stress")
+                    self.task_service_t.pop_emp(emp, "motivation")
+                    self.dest_service.search_for_room(emp, "DiningRoom")
             elif emp.is_stressed():
-                if not emp.is_eating() or emp.is_satiated():
+                if (not emp.is_playing() and not emp.is_eating()) or emp.is_satiated():
                     self.task_service_t.pop_emp(emp, "motivation")
                     self.task_service_t.pop_emp(emp, "work")
                     self.task_service_t.pop_emp(emp, "hunger")
@@ -48,7 +49,7 @@ class EmployeeManagementService:
                 self.task_service_t.pop_emp(emp, "hunger")
                 self.dest_service.search_for_room(emp, "OfficeRoom")
         # movement logic towards destination
-        if emp.destination is not None and not emp.is_dragged() and self.ground.is_touching_adjusted(emp):
+        if emp.destination is not None and not emp.is_collide_with_mouse() and self.ground.is_touching_adjusted(emp):
             if emp.is_sitting_down():
                 emp.remove_from_desk()
             self.move_emp_towards_destination(emp)
@@ -118,9 +119,9 @@ class EmployeeManagementService:
                     if self.delay_by_frames(100, 1):
                         self.employee_list[self.dragged_emp_i].change_shaking_sprite()
                     if self.delay_by_frames(1500, 0):
-                        self.employee_list[self.dragged_emp_i]._needs.decrease_stress()
+                        self.employee_list[self.dragged_emp_i].needs.decrease_stress()
                         if not self.employee_list[self.dragged_emp_i].is_stressed():
-                            self.employee_list[self.dragged_emp_i]._needs.meet()
+                            self.employee_list[self.dragged_emp_i].needs.meet()
 
             self.employee_list[self.dragged_emp_i].rect.centerx = mouse.get_pos()[0]
             self.employee_list[self.dragged_emp_i].rect.centery = mouse.get_pos()[1]
@@ -155,7 +156,7 @@ class EmployeeManagementService:
     def gravity_employee(self, emp: Employee):
         if not self.ground.is_touching(emp):
             emp.rect = emp.rect.move(0, 12)
-            if emp.rect.centery > self.falling_emp_y + 20 and not emp.is_dragged():
+            if emp.rect.centery > self.falling_emp_y + 20 and not emp.is_collide_with_mouse():
                 emp.change_falling_sprite()
                 self.falling_emp_y = emp.rect.centery
             else:

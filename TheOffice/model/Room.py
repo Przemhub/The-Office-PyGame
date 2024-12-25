@@ -20,7 +20,7 @@ class Room(sprite.Sprite):
 
     def get_base_coordinates(self):
         x = 0
-        y = 230
+        y = 240
         # make x and y indifferent to the position of camera
         if len(self.room_board[self.floor]) > 0:
             x = self.get_first_room().rect.x

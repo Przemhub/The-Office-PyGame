@@ -23,8 +23,8 @@ class BuildingService:
         self.build_corridor((6, floor))
 
     # board_pos(x,y)
-    # board_pos[x] - order of the room in a row
-    # board_pos[y] - floor
+    # board_pos[0] - row of rooms (x)
+    # board_pos[1] - column of floors  (y)
     def build_office(self, board_pos):
         self.validate_board_pos(board_pos)
         if board_pos[0] == len(self.room_board[board_pos[1]]):
